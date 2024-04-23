@@ -1,3 +1,6 @@
+> [!NOTE]
+> Контакты: [Telegram](https://t.me/mudachyo)
+> 
 > 🇪🇳 README in english available [here](README-EN.md)
 
 ## Как запустить  

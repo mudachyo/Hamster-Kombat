@@ -1,3 +1,6 @@
+> [!NOTE]
+> Contacts: [Telegram](https://t.me/mudachyo)
+> 
 > 🇷🇺 README на русском доступен [здесь](README.md)
 
 ## How to run  
