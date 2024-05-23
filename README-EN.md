@@ -8,7 +8,7 @@
 - Open the extension settings and enter the following data:
 - Tab URL: `*` From: `https://hamsterkombat.io/js/telegram-web-app.js` To: `https://ktnff.tech/hamsterkombat/telegram-web-app.js`
 - ![Extension settings](settings.png)
-- Open [Bot](https://web.telegram.org/k/#@hamster_kombat_bot) and run the game
+- Open [Bot](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) and run the game
 - ![Result](result.png)
 
 Donate
