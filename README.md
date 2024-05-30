@@ -2,7 +2,7 @@
 > Контакты: [Telegram](https://t.me/mudachyo)
 > 
 > 🇪🇳 README in english available [here](README-EN.md)
-
+---
 ## Как запустить
 ### Способ #1
 - Установить в свой бразуер расширение [Resource Override](https://chromewebstore.google.com/detail/resource-override/pkoacgokdfckfpndoffpifphamojphii)
@@ -19,18 +19,31 @@
 ## ![Результат](result.png)
 
 
-Пожертвование
 ---
-Мы принимаем следующие криптовалюты:
-
-- **TON**: `UQCGUzPN5GnFqWJiYsFtqqLGO75-cBXlOL8f_qbd7yKY2Tzh`
-
-- **USDT**(TRC20): `TFr8CiAPqEnSyoXHtVefWumodcXgjoB8rS`
-
-- **USDT**(TON): `UQCGUzPN5GnFqWJiYsFtqqLGO75-cBXlOL8f_qbd7yKY2Tzh`
-
-- **NOTCOIN**(TON): `UQCGUzPN5GnFqWJiYsFtqqLGO75-cBXlOL8f_qbd7yKY2Tzh`
-
-- **BTC**: `1Mba8xKKVLdcFJdV7jD8Ba3fFn7DWbp4bt`
-
-Пожертвования будут использованы для поддержания/сохранения проекта.
+> [!TIP]
+> Другие репозитории:
+> 
+> - [Hamster Kombat](https://github.com/mudachyo/Hamster-Kombat)
+> 
+> - [TapSwap](https://github.com/mudachyo/TapSwap)
+> 
+> - [MemeFi](https://github.com/mudachyo/MemeFi-Coin)
+> 
+> - [Blum](https://github.com/mudachyo/Blum)
+---
+> [!IMPORTANT] 
+> Пожертвование
+> 
+> Мы принимаем следующие криптовалюты:
+> 
+> - **TON**: `UQCGUzPN5GnFqWJiYsFtqqLGO75-cBXlOL8f_qbd7yKY2Tzh`
+> 
+> - **USDT**(TRC20): `TFr8CiAPqEnSyoXHtVefWumodcXgjoB8rS`
+> 
+> - **USDT**(TON): `UQCGUzPN5GnFqWJiYsFtqqLGO75-cBXlOL8f_qbd7yKY2Tzh`
+> 
+> - **NOTCOIN**(TON): `UQCGUzPN5GnFqWJiYsFtqqLGO75-cBXlOL8f_qbd7yKY2Tzh`
+> 
+> - **BTC**: `1Mba8xKKVLdcFJdV7jD8Ba3fFn7DWbp4bt`
+> 
+> Пожертвования будут использованы для поддержания/сохранения проекта.
