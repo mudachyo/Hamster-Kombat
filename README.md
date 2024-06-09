@@ -3,22 +3,26 @@
 > 
 > 🇪🇳 README in english available [here](README-EN.md)
 ---
-## Как запустить
-### Способ #1
+## Как запустить Hamster Kombat в браузере
+#### Способ #1
 - Установить в свой бразуер расширение [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa)
 - Открыть https://app.requestly.io/rules#sharedList/1717796906879-Hamster-Kombat
 - Нажать _Import to my rules_ справа сверху ![Import to my rules](import.png)
-### Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
+- Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 
-### Способ #2 (Если первый не работает)
+#### Способ #2 (Если первый не работает)
 - Установить в свой бразуер расширение [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
 - Установите скрипт. _(Для автоматической установки можно перейти по [этой ссылке](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js))_
-### Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
+- Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 
-### Автокликер
-- Установить в свой бразуер расширение [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
-- Установите скрипт. _(Для автоматической установки можно перейти по [этой ссылке](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js))_
-### Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
+## Автокликер
+Установите автокликер под своё расширение
+| Расширение                                                                                                       | Автокликер                                                                                       |
+|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa) | [Автокликер для Requestly](https://app.requestly.io/rules#sharedList/1717896750218-Hamster-Kombat-Autoclicker) |
+| [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)         | [Автокликер для Violentmonkey](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js)         |
+
+Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 
 ## ![Результат](result.gif)
 
