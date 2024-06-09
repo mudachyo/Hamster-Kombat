@@ -19,7 +19,7 @@
 Install the autoclicker for your extension
 | Extension                                                                                                       | Autoclicker                                                                                       |
 |------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa) | [Autoclicker for Requestly](https://app.requestly.io/rules#sharedList/1717896750218-Hamster-Kombat-Autoclicker) |
+| [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa) | [Autoclicker for Requestly](https://app.requestly.io/rules#sharedList/1717897316858-HK-Autoclicker) |
 | [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)         | [Autoclicker for Violentmonkey](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js)         |
 
 Open [Bot Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) and run the game
