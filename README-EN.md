@@ -1,7 +1,7 @@
 > [!NOTE]
-> Contacts: [Telegram](https://t.me/mudachyo)
-> 
-> 🇷🇺 README на русском доступен [здесь](README.md)
+> - Contacts: [Telegram](https://t.me/mudachyo)
+> - Channel: [Telegram Channel](https://t.me/shopalenka) 
+> - 🇷🇺 README на русском доступен [здесь](README.md)
 ---
 ## How to run Hamster Kombat in browser 
 #### Method #1
@@ -35,7 +35,7 @@ Open [Bot Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve
 > 
 > - [MemeFi](https://github.com/mudachyo/MemeFi-Coin)
 > 
-> - [Blum](https://github.com/mudachyo/Blum)
+> - [Blum + Autoclicker](https://github.com/mudachyo/Blum)
 ---
 > [!IMPORTANT] 
 > Donation
