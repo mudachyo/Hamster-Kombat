@@ -2,10 +2,10 @@
 // @name         Auto-Click hamster kombat
 // @namespace    Violentmonkey Scripts
 // @match        *://*.hamsterkombat.io/*
-// @version      1.0
+// @version      1.1
 // @author       mudachyo
-// @description  07.06.2024, 22:25:34
-// @icon         https://cdn.bulbapp.io/frontend/images/57256c0d-2a05-4b4f-acb6-5bc8e29ce13c/1
+// @description  10.06.2024, 21:43:52
+// @icon         https://hamsterkombat.io/images/icons/hamster-coin.png
 // @grant        none
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
 // @updateURL    https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -24,6 +24,18 @@
     };
 
     let retryCount = 0;
+
+    // Функция для получения меcтоположения элемента
+    function getElementPosition(element) {
+      let current_element = element;
+      let top = 0, left = 0;
+      do {
+          top += current_element.offsetTop  || 0;
+          left += current_element.offsetLeft || 0;
+          current_element = current_element.offsetParent;
+      } while(current_element);
+      return {top, left};
+    }
 
     // Функция для генерации случайного числа в диапазоне
     function getRandomNumber(min, max) {
@@ -57,9 +69,10 @@
 
         const energy = parseInt(energyElement.getElementsByTagName("p")[0].textContent.split(" / ")[0]);
         if (energy > settings.minEnergy) {
-            // Генерация случайных координат
-            const randomX = Math.floor(Math.random() * 380);
-            const randomY = Math.floor(Math.random() * 300);
+            // Генерация случайных координат, с учетом местоположения и размера кнопки
+            let {top, left} = getElementPosition(buttonElement);
+            const randomX = Math.floor(left + Math.random() * buttonElement.offsetWidth);
+            const randomY = Math.floor(top + Math.random() * buttonElement.offsetHeight);
             // Создание событий клика в указанных координатах
             const pointerDownEvent = new PointerEvent('pointerdown', { clientX: randomX, clientY: randomY });
             const pointerUpEvent = new PointerEvent('pointerup', { clientX: randomX, clientY: randomY });
