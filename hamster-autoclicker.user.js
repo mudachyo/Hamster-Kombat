@@ -25,6 +25,18 @@
 
     let retryCount = 0;
 
+    // Функция для получения метоположения элемента
+    function getElementPosition(element) {
+      let current_element = element;
+      let top = 0, left = 0;
+      do {
+          top += current_element.offsetTop  || 0;
+          left += current_element.offsetLeft || 0;
+          current_element = current_element.offsetParent;
+      } while(current_element);
+      return {top, left};
+    }
+
     // Функция для генерации случайного числа в диапазоне
     function getRandomNumber(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -57,9 +69,10 @@
 
         const energy = parseInt(energyElement.getElementsByTagName("p")[0].textContent.split(" / ")[0]);
         if (energy > settings.minEnergy) {
-            // Генерация случайных координат
-            const randomX = Math.floor(Math.random() * 380);
-            const randomY = Math.floor(Math.random() * 300);
+            // Генерация случайных координат, с учетом местоположения и размера кнопки
+            let {top, left} = getElementPosition(buttonElement);
+            const randomX = Math.floor(left + Math.random() * buttonElement.offsetWidth);
+            const randomY = Math.floor(top + Math.random() * buttonElement.offsetHeight);
             // Создание событий клика в указанных координатах
             const pointerDownEvent = new PointerEvent('pointerdown', { clientX: randomX, clientY: randomY });
             const pointerUpEvent = new PointerEvent('pointerup', { clientX: randomX, clientY: randomY });
