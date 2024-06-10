@@ -23,7 +23,7 @@
 | [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)         | [Автокликер для Violentmonkey](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js)         |
 
 Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
-
+## [Смотреть видео на YouTube](https://www.youtube.com/watch?v=eZtkSSh8IMc)
 ## ![Результат](result.gif)
 
 
