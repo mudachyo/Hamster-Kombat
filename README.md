@@ -20,7 +20,7 @@
 | Расширение                                                                                                       | Автокликер                                                                                       |
 |------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
 | [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa) | [Автокликер для Requestly](https://app.requestly.io/rules#sharedList/1717897316858-HK-Autoclicker) |
-| [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)         | [Автокликер для Violentmonkey](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js)         |
+| [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)         | [Автокликер для Violentmonkey](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js)         |
 
 Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 # [Смотреть видео на YouTube](https://www.youtube.com/watch?v=eZtkSSh8IMc)
