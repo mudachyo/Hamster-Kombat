@@ -1,0 +1,131 @@
+[
+  {
+    "createdBy": "2t5z0vjCDfRpUJf0snvbgSd0VHu1",
+    "creationDate": 1717185929932,
+    "currentOwner": "2t5z0vjCDfRpUJf0snvbgSd0VHu1",
+    "description": "",
+    "extensionRules": [
+      {
+        "action": {
+          "redirect": {
+            "url": "https://ktnff.tech/hamsterkombat/telegram-web-app.js"
+          },
+          "type": "redirect"
+        },
+        "condition": {
+          "excludedInitiatorDomains": [
+            "requestly.io"
+          ],
+          "excludedRequestDomains": [
+            "requestly.io"
+          ],
+          "urlFilter": "https://hamsterkombat.io/js/telegram-web-app.js"
+        }
+      }
+    ],
+    "groupId": "Group_3awbp",
+    "id": "Redirect_085zp",
+    "isSample": false,
+    "lastModifiedBy": "2t5z0vjCDfRpUJf0snvbgSd0VHu1",
+    "modificationDate": 1717185984032,
+    "name": "Hamster Kombat",
+    "objectType": "rule",
+    "pairs": [
+      {
+        "destination": "https://ktnff.tech/hamsterkombat/telegram-web-app.js",
+        "destinationType": "url",
+        "id": "vq2sq",
+        "source": {
+          "key": "Url",
+          "operator": "Contains",
+          "value": "https://hamsterkombat.io/js/telegram-web-app.js"
+        }
+      }
+    ],
+    "preserveCookie": false,
+    "ruleType": "Redirect",
+    "schemaVersion": "3.0.0",
+    "status": "Active"
+  },
+  {
+    "createdBy": "2t5z0vjCDfRpUJf0snvbgSd0VHu1",
+    "creationDate": 1717895750494,
+    "currentOwner": "2t5z0vjCDfRpUJf0snvbgSd0VHu1",
+    "description": "",
+    "extensionRules": [
+      {
+        "action": {
+          "responseHeaders": [
+            {
+              "header": "Content-Security-Policy",
+              "operation": "remove"
+            }
+          ],
+          "type": "modifyHeaders"
+        },
+        "condition": {
+          "excludedInitiatorDomains": [
+            "requestly.io"
+          ],
+          "excludedRequestDomains": [
+            "requestly.io"
+          ],
+          "isUrlFilterCaseSensitive": true,
+          "regexFilter": ".*hamsterkombat\\.io.*",
+          "resourceTypes": [
+            "main_frame",
+            "sub_frame"
+          ]
+        }
+      }
+    ],
+    "groupId": "Group_3awbp",
+    "id": "Script_o8120",
+    "isSample": false,
+    "lastModifiedBy": "2t5z0vjCDfRpUJf0snvbgSd0VHu1",
+    "modificationDate": 1718151653623,
+    "name": "Hamster Kombat Autoclicker",
+    "objectType": "rule",
+    "pairs": [
+      {
+        "id": "mj34o",
+        "scripts": [
+          {
+            "attributes": [
+              {
+                "name": "type",
+                "value": "text/javascript"
+              }
+            ],
+            "codeType": "js",
+            "fileName": "",
+            "id": "ybkbu",
+            "loadTime": "afterPageLoad",
+            "type": "url",
+            "value": "https://ktnff.tech/hamsterkombat/hamster-autoclicker.js"
+          }
+        ],
+        "source": {
+          "key": "Url",
+          "operator": "Contains",
+          "value": "hamsterkombat.io"
+        }
+      }
+    ],
+    "removeCSPHeader": true,
+    "ruleType": "Script",
+    "schemaVersion": "3.0.0",
+    "status": "Active"
+  },
+  {
+    "creationDate": 1717895836582,
+    "description": "",
+    "id": "Group_3awbp",
+    "isFavourite": true,
+    "modificationDate": 1718151653824,
+    "name": "Hamster Kombat",
+    "objectType": "group",
+    "status": "Active",
+    "children": []
+  }
+]
