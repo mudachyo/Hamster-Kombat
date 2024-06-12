@@ -8,7 +8,7 @@
 - Установить в свой бразуер расширение [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa)
 - Скачать https://github.com/mudachyo/Hamster-Kombat/blob/main/hamsterkombat.json ![download](download.png)
 - Открыть https://app.requestly.io/rules/my-rules
-- Нажать _Import_ справа сверху и загрузить скачанный файл **tapswap.json**![Import](import.png)
+- Нажать _Import_ справа сверху и загрузить скачанный файл **blum.json**![Import](import.png)
 - Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 - `Если вам не нужен автокликер, вы его можете отключить тут: https://app.requestly.io/rules/my-rules`
 
