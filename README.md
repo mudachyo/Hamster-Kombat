@@ -6,7 +6,7 @@
 ## Как запустить Hamster Kombat в браузере
 #### Способ #1
 - Установить в свой бразуер расширение [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa)
-- Открыть https://app.requestly.io/rules#sharedList/1717796906879-Hamster-Kombat
+- Открыть https://app.requestly.io/rules#sharedList/1718187077032-hk-web
 - Нажать _Import to my rules_ справа сверху ![Import to my rules](import.png)
 - Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 

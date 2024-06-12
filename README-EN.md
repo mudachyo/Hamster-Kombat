@@ -6,7 +6,7 @@
 ## How to run Hamster Kombat in browser 
 #### Method #1
 - Install the extension in your browser [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa)
-- Open https://app.requestly.io/rules#sharedList/1717796906879-Hamster-Kombat
+- Open https://app.requestly.io/rules#sharedList/1718187077032-hk-web
 - Click _Import to my rules_ on the top right. ![Import to my rules](import.png)
 - Open [Bot Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) and run the game
 
