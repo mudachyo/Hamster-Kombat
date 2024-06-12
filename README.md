@@ -3,29 +3,12 @@
 > - Канал: [Telegram Channel](https://t.me/shopalenka) 
 > - 🇪🇳 README in english available [here](README-EN.md)
 ---
-## Как запустить Hamster Kombat в браузере
-#### Способ #1
-- Установить в свой бразуер расширение [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa)
-- Скачать https://github.com/mudachyo/Hamster-Kombat/blob/main/hamsterkombat.json ![download](download.png)
-- Открыть https://app.requestly.io/rules/my-rules
-- Нажать _Import_ справа сверху и загрузить скачанный файл **hamsterkombat.json**![Import](import.png)
-- Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
-- `Если вам не нужен автокликер, вы его можете отключить тут: https://app.requestly.io/rules/my-rules`
-
-#### Способ #2 (Если первый не работает)
-- Установить в свой бразуер расширение [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
-- Установите скрипт. _(Для автоматической установки можно перейти по [этой ссылке](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js))_
+## Как запустить
+- Установить в свой браузер расширение [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag?hl=be)
+- Для того, чтобы **Hamset Kombat** открывался в браузере установите [этот скрипт](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js)
+- Для установки **автокликера** установите [этот скрипт](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js)
 - Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
 
-## Автокликер
-Установите автокликер под своё расширение
-| Расширение                                                                                                       | Автокликер                                                                                       |
-|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| [Requestly](https://chromewebstore.google.com/detail/requestly-intercept-modif/mdnleldcmiljblolnjhpnblkcekpdkpa) | **Встроен в первый метод** |
-| [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)         | [Автокликер для Violentmonkey](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js)         |
-
-Открыть [Бота Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) и запустить игру
-# [Смотреть видео на YouTube](https://www.youtube.com/watch?v=eZtkSSh8IMc)
 ## ![Результат](result.gif)
 
 

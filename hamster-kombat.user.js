@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name         Hamster Kombat
+// @name         Hamster Kombat Web
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Запуск Hamster Kombat в браузере
 // @author       mudachyo
 // @match        *://*.hamsterkombat.io/*
 // @grant        none
+// @icon         https://hamsterkombat.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js
 // @updateURL    https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js
 // @homepage     https://github.com/mudachyo/Hamster-Kombat
