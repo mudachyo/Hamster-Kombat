@@ -3,7 +3,7 @@
 // @namespace    Violentmonkey Scripts
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
-// @version      1.5
+// @version      1.6
 // @description  16.07.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -42,7 +42,8 @@
 		minEnergyRefillDelay: 60000, // Минимальная задержка в миллисекундах для пополнения энергии (60 секунд)
 		maxEnergyRefillDelay: 180000, // Максимальная задержка в миллисекундах для пополнения энергии (180 секунд)
 		maxRetries: 5, // Максимальное количество попыток перед перезагрузкой страницы
-		autoBuyEnabled: false // Автопокупка по умолчанию выключена
+		autoBuyEnabled: false, // Автопокупка по умолчанию выключена
+		maxPaybackHours: 672 // Максимальное время окупаемости в часах для автопокупки (4 недели)
 	};
 
 	let isScriptPaused = false;
@@ -112,7 +113,6 @@
 			buttonElement.dispatchEvent(pointerDownEvent);
 			buttonElement.dispatchEvent(pointerUpEvent);
 
-			console.log(`${logPrefix}Button clicked at (${randomX}, ${randomY})`, styles.success);
 		} else {
 			console.log(`${logPrefix}Insufficient energy, pausing script for energy refill.`, styles.info);
 
@@ -147,7 +147,7 @@
     function checkAndClickButton() {
         clickCloseButton();
 
-        setTimeout(checkAndClickButton, getRandomNumber(1000, 3000)); 
+        setTimeout(checkAndClickButton, getRandomNumber(1000, 3000));
     }
 
 	// thx for *clqkx
@@ -155,35 +155,36 @@
 		if (!settings.autoBuyEnabled) {
 			return;
 		}
-
+	
 		try {
-			const {
-				balance
-			} = await updateClickerData();
+			const { balance } = await updateClickerData();
 			const upgradesForBuy = window.useNuxtApp().$pinia._s.get('upgrade').upgradesForBuy;
-
+	
 			const sortedData = upgradesForBuy
-				.filter(item => item.isAvailable && !item.cooldownSeconds && !item.isExpired)
+				.filter(item => {
+					const paybackHours = item.price / item.profitPerHourDelta;
+					return item.isAvailable && !item.cooldownSeconds && !item.isExpired && paybackHours <= settings.maxPaybackHours;
+				})
 				.map(item => ({
 					...item,
 					paybackTime: item.price / item.profitPerHourDelta
 				}))
 				.sort((a, b) => a.paybackTime - b.paybackTime);
-
+	
 			if (sortedData.length > 0) {
 				const bestCard = sortedData[0];
-
+	
 				if (balance < bestCard.price) {
 					console.log(`${logPrefix}Waiting for sufficient balance to buy (${bestCard.name})`, styles.info);
 					setTimeout(autoBuy, getRandomNumber(3000, 3500));
 					return;
 				}
-
+	
 				try {
 					const delay = getRandomNumber(5000, 10000);
 					console.log(`${logPrefix}Waiting for ${delay / 1000} seconds before buying (${bestCard.name})`, styles.info);
 					await new Promise(resolve => setTimeout(resolve, delay));
-
+	
 					await window.useNuxtApp().$pinia._s.get('upgrade').postBuyUpgrade(bestCard.id);
 					console.log(`${logPrefix}Success buy (${bestCard.name})`, styles.success);
 				} catch (e) {
@@ -193,9 +194,171 @@
 		} catch (e) {
 			console.log(`${logPrefix}Error in autoBuy function: ${e.message}`, styles.error);
 		}
-
+	
 		if (settings.autoBuyEnabled) {
 			setTimeout(autoBuy, getRandomNumber(3000, 3500));
+		}
+	}
+
+	function displayUpgradesData() {
+		try {
+			const upgradeStore = window.useNuxtApp().$pinia._s.get('upgrade');
+			if (!upgradeStore || !upgradeStore.upgradesForBuy) {
+				throw new Error('Upgrade data not available');
+			}
+	
+			let upgradesForBuy = upgradeStore.upgradesForBuy;
+			
+			upgradesForBuy.sort((a, b) => {
+				const paybackTimeA = a.profitPerHourDelta ? (a.price / a.profitPerHourDelta) : Infinity;
+				const paybackTimeB = b.profitPerHourDelta ? (b.price / b.profitPerHourDelta) : Infinity;
+				return paybackTimeA - paybackTimeB;
+			});
+	
+			let tableContent = `
+			<style>
+				body { 
+					font-family: Arial, sans-serif; 
+					background-color: #1e1e1e; 
+					color: #e0e0e0;
+					margin: 0;
+					padding: 20px;
+				}
+				.header-container {
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					margin-bottom: 20px;
+					flex-wrap: wrap;
+				}
+				h1 { 
+					color: #61afef; 
+					margin: 0;
+					margin-right: 20px;
+				}
+				.button-container {
+					display: flex;
+					gap: 10px;
+					flex-wrap: wrap;
+				}
+				.button {
+					padding: 10px;
+					background-color: #61afef;
+					color: #282c34;
+					border: none;
+					cursor: pointer;
+					font-weight: bold;
+					text-decoration: none;
+					display: inline-block;
+				}
+				.button:hover {
+					background-color: #528bbd;
+				}
+				#toggleButton {
+					background-color: #98c379;
+				}
+				#donateButton {
+					background-color: #e5c07b;
+				}
+				table { 
+					border-collapse: collapse; 
+					width: 100%; 
+					background-color: #2d2d2d; 
+					margin-top: 20px;
+				}
+				th, td { 
+					border: 1px solid #4a4a4a; 
+					padding: 12px; 
+					text-align: left; 
+				}
+				th { 
+					background-color: #383838; 
+					color: #61afef; 
+				}
+				tr:nth-child(even) { background-color: #333333; }
+				tr:hover { background-color: #3a3a3a; }
+				.payback-good { color: #98c379; }
+				.payback-bad { color: #e06c75; }
+				.availability-icon {
+					font-size: 18px;
+					width: 24px;
+					text-align: center;
+				}
+				.hidden {
+					display: none;
+				}
+			</style>
+			<table id="upgradesTable">
+				<tr>
+					<th>Available</th>
+					<th>Name</th>
+					<th>Category</th>
+					<th>Level</th>
+					<th>Price</th>
+					<th>Profit per Hour</th>
+					<th>Payback Time (hours)</th>
+				</tr>`;
+	
+			upgradesForBuy.forEach(item => {
+				const paybackTime = item.profitPerHourDelta ? (item.price / item.profitPerHourDelta) : Infinity;
+				const paybackClass = paybackTime <= 672 ? 'payback-good' : 'payback-bad';
+				const isAvailable = item.isAvailable && !item.isExpired;
+				const availabilityIcon = isAvailable ? '✅' : '❌';
+				tableContent += `
+				<tr class="${isAvailable ? 'available' : 'unavailable'}">
+					<td class="availability-icon">${availabilityIcon}</td>
+					<td>${item.name}</td>
+					<td>${item.section || 'N/A'}</td>
+					<td>${item.level || 'N/A'}</td>
+					<td>${item.price.toLocaleString()}</td>
+					<td>${item.profitPerHourDelta.toLocaleString()}</td>
+					<td class="${paybackClass}">${paybackTime !== Infinity ? paybackTime.toFixed(2) : 'N/A'}</td>
+				</tr>`;
+			});
+	
+			tableContent += '</table>';
+	
+			const newWindow = window.open('', '_blank');
+			newWindow.document.write(`
+			<html>
+				<head>
+					<title>Hamster Kombat Upgrades</title>
+					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				</head>
+				<body>
+					<div class="header-container">
+						<h1>Hamster Kombat Upgrades</h1>
+						<div class="button-container">
+							<button id="toggleButton" class="button">Hide Unavailable</button>
+							<a href="https://github.com/mudachyo/Hamster-Kombat" target="_blank" class="button">Github</a>
+							<a href="https://t.me/shopalenka" target="_blank" class="button">Telegram Channel</a>
+							<a href="https://t.me/tribute/app?startapp=d55x" target="_blank" id="donateButton" class="button">Donate</a>
+						</div>
+					</div>
+					${tableContent}
+					<script>
+						let showUnavailable = true;
+						const toggleButton = document.getElementById('toggleButton');
+						const table = document.getElementById('upgradesTable');
+						toggleButton.addEventListener('click', () => {
+							showUnavailable = !showUnavailable;
+							toggleButton.textContent = showUnavailable ? 'Hide Unavailable' : 'Show All';
+							const rows = table.getElementsByTagName('tr');
+							for (let i = 1; i < rows.length; i++) {
+								if (rows[i].classList.contains('unavailable')) {
+									rows[i].classList.toggle('hidden', !showUnavailable);
+								}
+							}
+						});
+					</script>
+				</body>
+			</html>`);
+			newWindow.document.close();
+	
+			console.log(`${logPrefix}Upgrades data displayed in new window`, styles.success);
+		} catch (error) {
+			console.log(`${logPrefix}Error displaying upgrades: ${error.message}`, styles.error);
+			alert(`Error displaying upgrades: ${error.message}. Please check the console for more details.`);
 		}
 	}
 
@@ -221,7 +384,7 @@
 
 		const menuTitle = document.createElement('h3');
 		menuTitle.className = 'settings-title';
-		menuTitle.textContent = 'Hamster Kombat Autoclicker';
+		menuTitle.textContent = 'HK Autoclicker';
 
 		const closeButton = document.createElement('button');
 		closeButton.className = 'settings-close-button';
@@ -248,15 +411,37 @@
 		settingsMenu.appendChild(createSettingElement('Max Refill Delay (ms)', 'maxEnergyRefillDelay', 'range', 10, 180000, 10,
 			'EN: Maximum energy refill delay in seconds.<br>' +
 			'RU: Максимальная задержка пополнения энергии.'));
-		settingsMenu.appendChild(createSettingElement('Auto Buy', 'autoBuyEnabled', 'checkbox', null, null, null,
+
+		const autoBuyContainer = document.createElement('div');
+		autoBuyContainer.className = 'setting-item auto-buy-container';
+	
+		const autoBuyCheckbox = createSettingElement('Auto Buy', 'autoBuyEnabled', 'checkbox', null, null, null,
 			'EN: Automatically buy the most profitable upgrade.<br>' +
-			'RU: Автоматически покупать самое выгодное улучшение.'));
+			'RU: Автоматически покупать самое выгодное улучшение.');
+	
+		const maxPaybackHoursInput = createSettingElement('Max Payback Hours', 'maxPaybackHours', 'number', 1, 1000, 1,
+			'EN: Maximum payback time in hours for auto-buy.<br>' +
+			'RU: Максимальное время окупаемости в часах для автопокупки.');
+	
+		autoBuyContainer.appendChild(autoBuyCheckbox);
+		autoBuyContainer.appendChild(maxPaybackHoursInput);
+	
+		settingsMenu.appendChild(autoBuyContainer);
 
 		const pauseResumeButton = document.createElement('button');
 		pauseResumeButton.textContent = 'Pause';
 		pauseResumeButton.className = 'pause-resume-btn';
 		pauseResumeButton.onclick = toggleScriptPause;
 		settingsMenu.appendChild(pauseResumeButton);
+
+		const displayButton = document.createElement('button');
+		displayButton.textContent = 'View Upgrades Table';
+		displayButton.className = 'display-data-btn';
+		displayButton.onclick = () => {
+			console.log(`${logPrefix}Display button clicked`, styles.info);
+			displayUpgradesData();
+		};
+		settingsMenu.appendChild(displayButton);
 
 		const socialButtons = document.createElement('div');
 		socialButtons.className = 'social-buttons';
@@ -291,6 +476,7 @@
 			document.getElementById('maxEnergyRefillDelay').value = settings.maxEnergyRefillDelay;
 			document.getElementById('maxEnergyRefillDelayDisplay').textContent = settings.maxEnergyRefillDelay;
 			document.getElementById('autoBuyEnabled').checked = settings.autoBuyEnabled;
+    		document.getElementById('maxPaybackHours').value = settings.maxPaybackHours
 		}
 
 		const settingsButton = document.createElement('button');
@@ -453,6 +639,32 @@
 		  width: 16px;
 		  height: 16px;
 		  margin-right: 5px;
+		}
+		.display-data-btn {
+			display: block;
+			width: calc(100% - 10px);
+			padding: 8px;
+			margin: 10px 5px;
+			background-color: #61afef;
+			color: #282c34;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: bold;
+			font-size: 14px;
+			transition: background-color 0.3s;
+		}
+		  .display-data-btn:hover {
+			background-color: #4d8dcb;
+		}
+		  .auto-buy-container {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+		.auto-buy-container .setting-item {
+			margin-bottom: 0;
+			margin-right: 10px;
 		}
       `;
 		document.head.appendChild(style);
