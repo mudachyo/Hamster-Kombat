@@ -3,7 +3,7 @@
 // @namespace    Violentmonkey Scripts
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
-// @version      1.6
+// @version      1.7
 // @description  16.07.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -405,10 +405,10 @@
 		settingsMenu.appendChild(createSettingElement('Max Interval (ms)', 'maxInterval', 'range', 10, 10000, 10,
 			'EN: Maximum interval between clicks.<br>' +
 			'RU: Максимальный интервал между кликами.'));
-		settingsMenu.appendChild(createSettingElement('Min Refill Delay (ms)', 'minEnergyRefillDelay', 'range', 10, 180000, 10,
+		settingsMenu.appendChild(createSettingElement('Min Refill Delay (ms)', 'minEnergyRefillDelay', 'range', 10, 1200000, 10,
 			'EN: Minimum energy refill delay in seconds.<br>' +
 			'RU: Минимальная задержка пополнения энергии.'));
-		settingsMenu.appendChild(createSettingElement('Max Refill Delay (ms)', 'maxEnergyRefillDelay', 'range', 10, 180000, 10,
+		settingsMenu.appendChild(createSettingElement('Max Refill Delay (ms)', 'maxEnergyRefillDelay', 'range', 10, 1200000, 10,
 			'EN: Maximum energy refill delay in seconds.<br>' +
 			'RU: Максимальная задержка пополнения энергии.'));
 
@@ -477,6 +477,7 @@
 			document.getElementById('maxEnergyRefillDelayDisplay').textContent = settings.maxEnergyRefillDelay;
 			document.getElementById('autoBuyEnabled').checked = settings.autoBuyEnabled;
     		document.getElementById('maxPaybackHours').value = settings.maxPaybackHours
+			document.getElementById('maxPaybackHoursDisplay').textContent = settings.maxPaybackHours;
 		}
 
 		const settingsButton = document.createElement('button');
