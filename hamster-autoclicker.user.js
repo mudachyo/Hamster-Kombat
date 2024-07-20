@@ -3,7 +3,8 @@
 // @namespace    Violentmonkey Scripts
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
-// @version      1.7
+// @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
+// @version      1.8
 // @description  16.07.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
