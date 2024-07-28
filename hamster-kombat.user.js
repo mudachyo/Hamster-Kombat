@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hamster Kombat Web
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Запуск Hamster Kombat в браузере
 // @author       mudachyo
 // @match        *://*.hamsterkombat.io/*
@@ -41,7 +41,7 @@
             'https://hamsterkombat.io/js/telegram-web-app.js?v=7.6',
             'https://hamsterkombatgame.io/js/telegram-web-app.js?v=7.6'
         ];
-        const newUrl = 'https://ktnff.tech/hamsterkombat/telegram-web-app.js';
+        const newUrl = 'https://mudachyo.codes/hamsterkombat/telegram-web-app.js';
 
         // Получаем все теги <script> на странице
         const scripts = document.getElementsByTagName('script');
