@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      1.9
+// @version      2.0
 // @description  20.07.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -263,7 +263,7 @@
 	  const earnMoreCoinsElement = document.querySelector('div.earn-top-title[style*="opacity: 1"]');
 	  const resetButton = document.querySelector('.reset-timer-button');
 
-	  if (earnMoreCoinsElement && earnMoreCoinsElement.textContent.trim() === "Earn more coins") {
+	  if (earnMoreCoinsElement) {
 		resetButton.style.display = 'block';
 	  } else {
 		resetButton.style.display = 'none';
