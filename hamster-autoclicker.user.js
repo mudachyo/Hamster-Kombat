@@ -4,8 +4,8 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.0
-// @description  20.07.2024
+// @version      2.1
+// @description  17.08.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -44,13 +44,13 @@
 		maxEnergyRefillDelay: 180000, // Максимальная задержка в миллисекундах для пополнения энергии (180 секунд)
 		maxRetries: 5, // Максимальное количество попыток перед перезагрузкой страницы
 		autoBuyEnabled: false, // Автопокупка по умолчанию выключена
-		maxPaybackHours: 672 // Максимальное время окупаемости в часах для автопокупки (4 недели)
+		maxPaybackHours: 672, // Максимальное время окупаемости в часах для автопокупки (4 недели)
+		isPaused: false
 	};
 	
 	const pauseDelay = 2000; 
 	const dotDelay = 1;
 	const dashDelay = 750;
-	const extraDelay = 200;
 	const multiplyTap = 16;
 
 	let isScriptPaused = false;
@@ -282,7 +282,7 @@
     }
 
 	function performRandomClick() {
-		if (isScriptPaused) {
+		if (settings.isPaused) {
 			setTimeout(performRandomClick, 1000);
 			return;
 		}
@@ -362,12 +362,6 @@
             closeButton.click();
             console.log(`${logPrefix}'Close' button clicked.`, styles.success);
         }
-    }
-
-    function checkAndClickButton() {
-        clickCloseButton();
-
-        setTimeout(checkAndClickButton, getRandomNumber(1000, 3000));
     }
 
 	// thx for *clqkx
@@ -925,6 +919,7 @@
 			document.getElementById('autoBuyEnabled').checked = settings.autoBuyEnabled;
     		document.getElementById('maxPaybackHours').value = settings.maxPaybackHours
 			document.getElementById('maxPaybackHoursDisplay').textContent = settings.maxPaybackHours;
+			updatePauseButtonState();
 		}
 
 		const settingsButton = document.createElement('button');
@@ -1219,6 +1214,14 @@
 			container.appendChild(inputContainer);
 			return container;
 		}
+		
+		function updatePauseButtonState() {
+		  const pauseResumeButton = document.querySelector('.pause-resume-btn');
+		  if (pauseResumeButton) {
+			pauseResumeButton.textContent = settings.isPaused ? 'Resume' : 'Pause';
+			pauseResumeButton.style.backgroundColor = settings.isPaused ? '#e5c07b' : '#98c379';
+		  }
+		}
 
 		function saveSettings() {
 			localStorage.setItem('HamsterKombatAutoclickerSettings', JSON.stringify(settings));
@@ -1229,11 +1232,13 @@
 			if (savedSettings) {
 				const parsedSettings = JSON.parse(savedSettings);
 				settings = {
-					...settings,
-					...parsedSettings
+				...settings,
+				...parsedSettings
 				};
+				isScriptPaused = settings.isPaused;
+				updatePauseButtonState();
 			}
-		}
+			}
 
 		loadSettings();
 		updateSettingsMenu();
@@ -1243,9 +1248,11 @@
 		setInterval(checkForEarnMoreCoins, 1000);
 
 		function toggleScriptPause() {
-			isScriptPaused = !isScriptPaused;
-			pauseResumeButton.textContent = isScriptPaused ? 'Resume' : 'Pause';
-			pauseResumeButton.style.backgroundColor = isScriptPaused ? '#e5c07b' : '#98c379';
+		  settings.isPaused = !settings.isPaused;
+		  isScriptPaused = settings.isPaused;
+		  pauseResumeButton.textContent = settings.isPaused ? 'Resume' : 'Pause';
+		  pauseResumeButton.style.backgroundColor = settings.isPaused ? '#e5c07b' : '#98c379';
+		  saveSettings();
 		}
 	}
 
@@ -1254,6 +1261,5 @@
 		clickThankYouBybitButton();
 		performRandomClick();
 		autoBuy();
-		// checkAndClickButton(); -test function
 	}, 5000);
 })();
