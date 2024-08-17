@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      1.8
+// @version      1.9
 // @description  20.07.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -46,6 +46,12 @@
 		autoBuyEnabled: false, // Автопокупка по умолчанию выключена
 		maxPaybackHours: 672 // Максимальное время окупаемости в часах для автопокупки (4 недели)
 	};
+	
+	const pauseDelay = 2000; 
+	const dotDelay = 1;
+	const dashDelay = 750;
+	const extraDelay = 200;
+	const multiplyTap = 16;
 
 	let isScriptPaused = false;
 	let retryCount = 0;
@@ -68,10 +74,223 @@
 	function getRandomNumber(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
+	
+	async function sendMorseCode(text) {
+		const morseString = textToMorse(text);
+		console.log('Converted Morse Code:', morseString);
+		await textToTap(morseString);
+	}
+	
+    function textToMorse(text) {
+        const morseCodeMap = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+            'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+            'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..', ' ': ' '
+        };
+
+        return text.toUpperCase().split('').map(char => {
+            if (char in morseCodeMap) {
+                return morseCodeMap[char];
+            } else if (char === ' ') {
+                return ' ';
+            }
+            return '';
+        }).join(' ');
+    }
+
+    async function dotTap(button) {
+        if (energyLevel() > 100) {
+            await simulateTap(button, dotDelay);
+        }
+    }
+
+	function findTapButton() {
+		return document.querySelector('.user-tap-button');
+	}
+    async function dashTap(button) {
+        if (energyLevel() > 100) {
+            await simulateTap(button, dashDelay);
+        }
+    }
+
+    function pauseBetweenLetters() {
+        return new Promise(resolve => setTimeout(resolve, pauseDelay));
+    }
+
+	async function textToTap(morseString) {
+		const button = findTapButton();
+		if (!button) {
+			console.log('Button not found');
+			return;
+		}
+
+		let clickWord = 0;
+		let clickTime = 0;
+
+		for (const char of morseString) {
+			switch (char) {
+				case '.':
+					await dotTap(button);
+					clickWord++;
+					clickTime += dotDelay;
+					break;
+				case '-':
+					await dashTap(button);
+					clickWord++;
+					clickTime += dashDelay;
+					break;
+				case ' ':
+					await pauseBetweenLetters();
+					break;
+			}
+
+			const energyNow = energyLevel();
+			const waitTime = actionCanProceed(energyNow, clickWord, clickTime, multiplyTap);
+			if (waitTime > 0) {
+				console.log(`Not enough energy, waiting for ${waitTime} seconds...`);
+				await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+			}
+		}
+
+		await pauseBetweenLetters();
+	}
+
+	function checkEnergyAndClick() {
+			if (!isClicking) return;
+
+			const button = findTapButton();
+			if (!button) {
+				console.log('Button not found');
+				return;
+			}
+
+			const energy = energyLevel();
+			if (energy > 100) {
+				simulateTap(button, dotDelay);
+			}
+
+			requestAnimationFrame(checkEnergyAndClick);
+		}
+	
+	function energyLevel() {
+        const energyElement = document.querySelector(".user-tap-energy p");
+        if (energyElement) {
+            return parseInt(energyElement.textContent.split(" / ")[0], 10);
+        }
+        return 0;
+    }
+	
+	async function simulateTap(button, delay) {
+        const rect = button.getBoundingClientRect();
+        const centerX = rect.left + (rect.width / 2);
+        const centerY = rect.top + (rect.height / 2);
+
+        const downEvent = new PointerEvent('pointerdown', {
+            bubbles: true,
+            clientX: centerX,
+            clientY: centerY
+        });
+
+        const upEvent = new PointerEvent('pointerup', {
+            bubbles: true,
+            clientX: centerX,
+            clientY: centerY
+        });
+
+        button.dispatchEvent(downEvent);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        button.dispatchEvent(upEvent);
+        await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+	function createResetButton() {
+	  const resetButton = document.createElement('button');
+	  resetButton.className = 'reset-timer-button';
+	  resetButton.textContent = '⏱️';
+	  resetButton.style.display = 'none';
+	  resetButton.onclick = showInstructionAndResetTimer;
+	  document.body.appendChild(resetButton);
+
+	  const style = document.createElement('style');
+	  style.textContent = `
+		.reset-timer-button {
+		  position: fixed;
+		  bottom: 120px;
+		  right: 20px;
+		  background-color: rgba(36, 146, 255, 0.8);
+		  color: #fff;
+		  border: none;
+		  border-radius: 50%;
+		  width: 40px;
+		  height: 40px;
+		  font-size: 18px;
+		  cursor: pointer;
+		  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		  z-index: 9999;
+		}
+	  `;
+	  document.head.appendChild(style);
+	}
+
+	function showInstructionAndResetTimer() {
+	  const instruction = `
+	EN: First, accept the YouTube tasks. Then click this button to reset the timer. You won't need to wait an hour for the tasks to be verified, and you can claim the reward immediately.
+
+	RU: Сначала примите задания YouTube. Затем нажмите эту кнопку, чтобы сбросить таймер. Вам не нужно будет ждать час, пока задания проверятся, и вы сможете сразу забрать награду.
+	  `;
+
+	  alert(instruction);
+
+	  for (let i = 0; i < localStorage.length; i++) {
+		let key = localStorage.key(i);
+
+		if (key.startsWith("hamster_youtube_")) {
+		  let unixTime = parseInt(localStorage.getItem(key), 10);
+
+		  if (!isNaN(unixTime)) {
+			let newUnixTime = unixTime - 3660;
+
+			localStorage.setItem(key, newUnixTime.toString());
+		  }
+		}
+	  }
+
+	  alert("EN: The YouTube quest timer has been successfully reset! If you have already accepted the quests, you can collect the reward for them.\n\nRU: Таймер YouTube-заданий успешно сброшен! Если вы уже приняли задания, вы можете забрать за них награду.");
+	}
+
+	function checkForEarnMoreCoins() {
+	  const earnMoreCoinsElement = document.querySelector('div.earn-top-title[style*="opacity: 1"]');
+	  const resetButton = document.querySelector('.reset-timer-button');
+
+	  if (earnMoreCoinsElement && earnMoreCoinsElement.textContent.trim() === "Earn more coins") {
+		resetButton.style.display = 'block';
+	  } else {
+		resetButton.style.display = 'none';
+	  }
+	}
+	
+    function actionCanProceed(energyNow, clickWord, clickTime, multiplyTap) {
+        let energyCost = Math.ceil((clickWord * multiplyTap) - ((clickTime / 1000) * 3));
+        let waitUntilEnergy = 0;
+
+        if (energyCost > energyNow) {
+            waitUntilEnergy = Math.ceil((energyCost - energyNow) / 3 + 3);
+        }
+
+        return waitUntilEnergy;
+    }
 
 	function performRandomClick() {
 		if (isScriptPaused) {
 			setTimeout(performRandomClick, 1000);
+			return;
+		}
+
+		const earnMoreCoinsElement = document.querySelector('div.earn-top-title[style*="opacity: 1"]');
+		if (earnMoreCoinsElement && earnMoreCoinsElement.textContent.trim() === "Earn more coins") {
+			console.log(`${logPrefix}Earn more coins element found, pausing autoclicker...`, styles.info);
+			setTimeout(performRandomClick, 5000);
 			return;
 		}
 
@@ -83,7 +302,7 @@
 
 			retryCount++;
 			if (retryCount >= settings.maxRetries) {
-				console.log(`${logPrefix}Max retries reached, reloading page...`, styles.error);
+				console.log(`${logPrefix}Max retries reached, but Earn more coins element is not present. Reloading page...`, styles.error);
 				location.reload();
 			} else {
 				setTimeout(() => {
@@ -376,6 +595,233 @@
 		};
 	}
 
+	function createPromoCodeButton() {
+	  const promoCodeButton = document.createElement('button');
+	  promoCodeButton.className = 'promo-code-button';
+	  promoCodeButton.textContent = '🔑';
+	  promoCodeButton.style.display = 'none';
+	  promoCodeButton.onclick = openPromoCodeWindow;
+	  document.body.appendChild(promoCodeButton);
+	}
+	
+	function checkPromoCodeInput() {
+	  const promoCodeInput = document.querySelector('.promocode-input-container');
+	  const promoCodeButton = document.querySelector('.promo-code-button');
+	  const morseButton = document.querySelector('.morse-button');
+	  
+	  if (promoCodeInput && promoCodeButton) {
+		promoCodeButton.style.display = 'block';
+		if (morseButton && morseButton.style.display !== 'none') {
+		  promoCodeButton.style.bottom = '120px';
+		} else {
+		  promoCodeButton.style.bottom = '70px';
+		}
+	  } else if (promoCodeButton) {
+		promoCodeButton.style.display = 'none';
+	  }
+	}
+	
+	let promoCodeWindow = null;
+
+	function openPromoCodeWindow() {
+	  if (promoCodeWindow) {
+		document.body.removeChild(promoCodeWindow);
+		promoCodeWindow = null;
+		return;
+	  }
+
+	  promoCodeWindow = document.createElement('div');
+	  promoCodeWindow.className = 'promo-code-window';
+	  promoCodeWindow.innerHTML = `
+		<div class="promo-code-header">
+		  <h3>Enter Promo Codes</h3>
+		  <button class="close-button">×</button>
+		</div>
+		<textarea id="promoCodeInput" rows="10" cols="30" placeholder="Enter one promo code per line"></textarea>
+		<button id="startPromoCodeButton">Start</button>
+		<div id="promoCodeStats"></div>
+	  `;
+	  document.body.appendChild(promoCodeWindow);
+	  
+	  document.getElementById('startPromoCodeButton').onclick = startPromoCodeEntry;
+	  document.querySelector('.promo-code-window .close-button').onclick = () => {
+		document.body.removeChild(promoCodeWindow);
+		promoCodeWindow = null;
+	  };
+	}
+	
+	async function startPromoCodeEntry() {
+	  const promoCodes = document.getElementById('promoCodeInput').value.split('\n');
+	  const inputField = document.querySelector('.promocode-input-container input');
+	  const redeemButton = document.querySelector('.promocode-input-container button');
+	  let successCount = 0;
+	  let errorCount = 0;
+	  let remainingCount = promoCodes.length;
+
+	  for (const code of promoCodes) {
+		if (code.trim() === '') {
+		  remainingCount--;
+		  continue;
+		}
+
+		const cleanCode = code.trim().replace(/\s/g, '');
+		inputField.value = cleanCode;
+		inputField.dispatchEvent(new Event('input', { bubbles: true }));
+		
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		
+		redeemButton.click();
+		
+		await new Promise(resolve => setTimeout(resolve, 2000));
+		
+		const result = await waitForPromoCodeResult();
+		if (result === 'success') {
+		  successCount++;
+		} else if (result === 'error') {
+		  errorCount++;
+		}
+		remainingCount--;
+
+		updatePromoCodeStats(successCount, errorCount, remainingCount);
+		
+		await new Promise(resolve => setTimeout(resolve, Math.random() * 8000 + 7000));
+	  }
+	}
+
+	async function waitForPromoCodeResult() {
+	  return new Promise(resolve => {
+		const checkResult = () => {
+		  const successElement = document.querySelector('.promocode-text-success');
+		  const errorElement = document.querySelector('.promocode-text-error');
+		  
+		  if (successElement && successElement.style.display !== 'none') {
+			resolve('success');
+		  } else if (errorElement && errorElement.style.display !== 'none') {
+			resolve('error');
+		  } else {
+			setTimeout(checkResult, 100);
+		  }
+		};
+		checkResult();
+	  });
+	}
+
+	function updatePromoCodeStats(success, error, remaining) {
+	  const statsElement = document.getElementById('promoCodeStats');
+	  statsElement.innerHTML = `
+		Success: <span class="success-count">${success}</span> | 
+		Error: <span class="error-count">${error}</span> | 
+		Remaining: <span class="remaining-count">${remaining}</span>
+	  `;
+	}
+	
+	const promoCodeStyles = `
+	  .promo-code-button {
+		position: fixed;
+		right: 20px;
+		background-color: rgba(36, 146, 255, 0.8);
+		color: #fff;
+		border: none;
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		font-size: 18px;
+		cursor: pointer;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		z-index: 9999;
+	  }
+	  .promo-code-window {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: rgba(40, 44, 52, 0.95);
+		border-radius: 8px;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+		color: #abb2bf;
+		font-family: 'Arial', sans-serif;
+		z-index: 10001;
+		padding: 20px;
+		width: 300px;
+	  }
+	  .promo-code-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+	  }
+	  .promo-code-header h3 {
+		margin: 0;
+		color: #61afef;
+		white-space: nowrap;
+	  }
+	  .close-button {
+		background: none;
+		border: none;
+		color: #e06c75;
+		font-size: 20px;
+		cursor: pointer;
+		padding: 0;
+	  }
+	  #promoCodeInput {
+		width: 100%;
+		margin-bottom: 15px;
+		background-color: #282c34;
+		color: #abb2bf;
+		border: 1px solid #4b5263;
+		border-radius: 4px;
+		padding: 8px;
+	  }
+	  #startPromoCodeButton {
+		width: 100%;
+		padding: 8px;
+		background-color: #98c379;
+		color: #282c34;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bold;
+		margin-bottom: 10px;
+	  }
+	  #promoCodeStats {
+		text-align: center;
+		font-size: 14px;
+		color: #abb2bf;
+	  }
+	  #promoCodeStats .success-count {
+		color: #98c379;
+		font-weight: bold;
+	  }
+	  #promoCodeStats .error-count {
+		color: #e06c75;
+		font-weight: bold;
+	  }
+	  #promoCodeStats .remaining-count {
+		color: #61afef;
+		font-weight: bold;
+	  }
+	`;
+	document.head.appendChild(document.createElement('style')).textContent += promoCodeStyles;
+
+	const morseButton = document.createElement('button');
+	morseButton.className = 'morse-button';
+	morseButton.textContent = '🅰';
+	morseButton.style.display = 'none';
+	morseButton.onclick = () => {
+		const text = prompt("Enter text for Morse code:");
+		if (text) {
+			sendMorseCode(text);
+		}
+	};
+	document.body.appendChild(morseButton);
+
+	function checkMorseMode() {
+		const morseModeButton = document.querySelector('.user-tap-button.is-morse-mode');
+		morseButton.style.display = morseModeButton ? 'block' : 'none';
+	}
+
+	setInterval(checkMorseMode, 1000);
+
 	createSettingsMenu();
 
 	function createSettingsMenu() {
@@ -513,6 +959,8 @@
 		  display: flex;
 		  align-items: center;
 		  justify-content: space-between;
+		  white-space: nowrap; /* Добавьте эту строку */
+		  width: 100%; /* Добавьте эту строку */
 		}
 		.settings-close-button {
 		  background: none;
@@ -668,6 +1116,37 @@
 			margin-bottom: 0;
 			margin-right: 10px;
 		}
+		#morseInputField {
+		width: 100%;
+		padding: 5px;
+		margin-bottom: 10px;
+		}
+		button {
+		width: 100%;
+		padding: 8px;
+		margin-bottom: 10px;
+		background-color: #61afef;
+		color: #282c34;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bold;
+		}
+		.morse-button {
+		position: fixed;
+		bottom: 70px;
+		right: 20px;
+		background-color: rgba(36, 146, 255, 0.8);
+		color: #fff;
+		border: none;
+		border-radius: 50%;
+		width: 40px;
+		height: 40px;
+		font-size: 18px;
+		cursor: pointer;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		z-index: 9999;
+		}
       `;
 		document.head.appendChild(style);
 
@@ -758,6 +1237,10 @@
 
 		loadSettings();
 		updateSettingsMenu();
+		createPromoCodeButton();
+		setInterval(checkPromoCodeInput, 1000);
+		createResetButton();
+		setInterval(checkForEarnMoreCoins, 1000);
 
 		function toggleScriptPause() {
 			isScriptPaused = !isScriptPaused;
