@@ -7,7 +7,7 @@
 - Install extension in your browser [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag?hl=be)
 - In order for **Hamster Kombat** to open in a browser, install [this script](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js)
 - To install **autoclicker** install [this script](https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js)
-- Open [Bot Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_kombat_bot%26appname%3Dstart%26startapp%3DkentId2475526) and run the game
+- Open [Bot Hamster Kombat](https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3Dhamster_koMbat_bot%26appname%3Dstart%26startapp%3DkentId2475526) and run the game
 
 ## ![Result](result.gif)
 ---
