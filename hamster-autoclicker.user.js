@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.1
+// @version      2.2
 // @description  17.08.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -81,23 +81,25 @@
 		await textToTap(morseString);
 	}
 	
-    function textToMorse(text) {
-        const morseCodeMap = {
-            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
-            'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
-            'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
-            'Y': '-.--', 'Z': '--..', ' ': ' '
-        };
-
-        return text.toUpperCase().split('').map(char => {
-            if (char in morseCodeMap) {
-                return morseCodeMap[char];
-            } else if (char === ' ') {
-                return ' ';
-            }
-            return '';
-        }).join(' ');
-    }
+	function textToMorse(text) {
+		const morseCodeMap = {
+			'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+			'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+			'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+			'Y': '-.--', 'Z': '--..', ' ': ' ',
+			'0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', 
+			'5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
+		};
+	
+		return text.toUpperCase().split('').map(char => {
+			if (char in morseCodeMap) {
+				return morseCodeMap[char];
+			} else if (char === ' ') {
+				return ' ';
+			}
+			return '';
+		}).join(' ');
+	}
 
     async function dotTap(button) {
         if (energyLevel() > 100) {
