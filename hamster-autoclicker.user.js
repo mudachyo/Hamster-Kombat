@@ -4,8 +4,8 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.2
-// @description  17.08.2024
+// @version      2.3
+// @description  26.08.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -548,7 +548,7 @@
 							<button id="toggleButton" class="button">Hide Unavailable</button>
 							<a href="https://github.com/mudachyo/Hamster-Kombat" target="_blank" class="button">Github</a>
 							<a href="https://t.me/shopalenka" target="_blank" class="button">Telegram Channel</a>
-							<a href="https://t.me/tribute/app?startapp=d55x" target="_blank" id="donateButton" class="button">Donate</a>
+							<a href="https://mudachyo.codes/donate/" target="_blank" id="donateButton" class="button">Donate</a>
 						</div>
 					</div>
 					${tableContent}
