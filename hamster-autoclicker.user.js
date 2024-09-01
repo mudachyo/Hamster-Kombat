@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.3
+// @version      2.4
 // @description  26.08.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -52,6 +52,7 @@
 	const dotDelay = 1;
 	const dashDelay = 750;
 	const multiplyTap = 16;
+	const baseUrl = 'https://api.hamsterkombatgame.io';
 
 	let isScriptPaused = false;
 	let retryCount = 0;
@@ -120,6 +121,46 @@
         return new Promise(resolve => setTimeout(resolve, pauseDelay));
     }
 
+	async function fetchHamsterData() {
+		const token = localStorage.getItem('authToken');
+		
+		if (!token) {
+			console.error("Токен не найден в Local Storage");
+			return null;
+		}
+	
+		const url = `${baseUrl}/clicker/config`;
+		const headers = {
+			'Authorization': `Bearer ${token}`,
+			'Content-Type': 'application/json'
+		};
+	
+		try {
+			const response = await fetch(url, {
+				method: 'POST',
+				headers: headers
+			});
+	
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+	
+			const data = await response.json();
+	
+			if (data.dailyCipher) {
+				const encodedCipher = data.dailyCipher.cipher;
+				const correctedCipher = encodedCipher.slice(0, 3) + encodedCipher.slice(4);
+				const decodedCipher = atob(correctedCipher);
+				console.log("Decoded Cipher:", decodedCipher);
+				return decodedCipher;
+			}
+		} catch (error) {
+			console.error("Ошибка при получении данных:", error);
+		}
+		
+		return null;
+	}
+
 	async function textToTap(morseString) {
 		const button = findTapButton();
 		if (!button) {
@@ -157,23 +198,6 @@
 
 		await pauseBetweenLetters();
 	}
-
-	function checkEnergyAndClick() {
-			if (!isClicking) return;
-
-			const button = findTapButton();
-			if (!button) {
-				console.log('Button not found');
-				return;
-			}
-
-			const energy = energyLevel();
-			if (energy > 100) {
-				simulateTap(button, dotDelay);
-			}
-
-			requestAnimationFrame(checkEnergyAndClick);
-		}
 	
 	function energyLevel() {
         const energyElement = document.querySelector(".user-tap-energy p");
@@ -357,14 +381,6 @@
 			console.log(`${logPrefix}'Thank you' button clicked.`, styles.success);
 		}
 	}
-
-    function clickCloseButton() {
-        const closeButton = document.querySelector('.bottom-sheet-button.button.button-primary.button-large');
-        if (closeButton) {
-            closeButton.click();
-            console.log(`${logPrefix}'Close' button clicked.`, styles.success);
-        }
-    }
 
 	// thx for *clqkx
 	async function autoBuy() {
@@ -799,12 +815,74 @@
 	`;
 	document.head.appendChild(document.createElement('style')).textContent += promoCodeStyles;
 
+	function createInfoButton() {
+		const infoButton = document.createElement('button');
+		infoButton.className = 'open-in-new-tab-button';
+		infoButton.innerHTML = '&#x1F3AE;';
+		infoButton.onclick = () => {
+		  window.open(window.location.href, '_blank');
+		};
+		document.body.appendChild(infoButton);
+	  
+		const style = document.createElement('style');
+		style.textContent = `
+		  .open-in-new-tab-button {
+			position: fixed;
+			bottom: 70px;
+			right: 20px;
+			background-color: rgba(36, 146, 255, 0.8);
+			color: #fff;
+			border: none;
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			font-size: 18px;
+			cursor: pointer;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+			z-index: 9999;
+		  }
+		  .open-in-new-tab-button:hover {
+			background-color: rgba(36, 146, 255, 1);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+		  }
+		`;
+		document.head.appendChild(style);
+	  }
+	  
+	  function checkAndAddButton() {
+		const infoButton = document.querySelector('.open-in-new-tab-button');
+	  
+		if (window.location.href.includes('clicker/playground')) {
+		  if (!infoButton) {
+			createInfoButton();
+		  } else {
+			infoButton.style.display = 'flex';
+		  }
+		} else if (infoButton) {
+		  infoButton.style.display = 'none';
+		}
+	  }
+	  
+	  setInterval(checkAndAddButton, 1000);
+	  
+	  let lastUrl = location.href; 
+	  new MutationObserver(() => {
+		const url = location.href;
+		if (url !== lastUrl) {
+		  lastUrl = url;
+		  checkAndAddButton();
+		}
+	  }).observe(document, {subtree: true, childList: true});
+
 	const morseButton = document.createElement('button');
 	morseButton.className = 'morse-button';
 	morseButton.textContent = '🅰';
 	morseButton.style.display = 'none';
-	morseButton.onclick = () => {
-		const text = prompt("Enter text for Morse code:");
+	morseButton.onclick = async () => {
+		let text = await fetchHamsterData();
+		if (!text) {
+			text = prompt("Enter text for Morse code:");
+		}
 		if (text) {
 			sendMorseCode(text);
 		}
