@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.4
+// @version      2.5
 // @description  26.08.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -814,65 +814,6 @@
 	  }
 	`;
 	document.head.appendChild(document.createElement('style')).textContent += promoCodeStyles;
-
-	function createInfoButton() {
-		const infoButton = document.createElement('button');
-		infoButton.className = 'open-in-new-tab-button';
-		infoButton.innerHTML = '&#x1F3AE;';
-		infoButton.onclick = () => {
-		  window.open(window.location.href, '_blank');
-		};
-		document.body.appendChild(infoButton);
-	  
-		const style = document.createElement('style');
-		style.textContent = `
-		  .open-in-new-tab-button {
-			position: fixed;
-			bottom: 70px;
-			right: 20px;
-			background-color: rgba(36, 146, 255, 0.8);
-			color: #fff;
-			border: none;
-			border-radius: 50%;
-			width: 40px;
-			height: 40px;
-			font-size: 18px;
-			cursor: pointer;
-			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-			z-index: 9999;
-		  }
-		  .open-in-new-tab-button:hover {
-			background-color: rgba(36, 146, 255, 1);
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-		  }
-		`;
-		document.head.appendChild(style);
-	  }
-	  
-	  function checkAndAddButton() {
-		const infoButton = document.querySelector('.open-in-new-tab-button');
-	  
-		if (window.location.href.includes('clicker/playground')) {
-		  if (!infoButton) {
-			createInfoButton();
-		  } else {
-			infoButton.style.display = 'flex';
-		  }
-		} else if (infoButton) {
-		  infoButton.style.display = 'none';
-		}
-	  }
-	  
-	  setInterval(checkAndAddButton, 1000);
-	  
-	  let lastUrl = location.href; 
-	  new MutationObserver(() => {
-		const url = location.href;
-		if (url !== lastUrl) {
-		  lastUrl = url;
-		  checkAndAddButton();
-		}
-	  }).observe(document, {subtree: true, childList: true});
 
 	const morseButton = document.createElement('button');
 	morseButton.className = 'morse-button';
