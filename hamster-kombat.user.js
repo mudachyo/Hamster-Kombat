@@ -1,13 +1,12 @@
 // ==UserScript==
 // @name         Hamster Kombat Web
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Запуск Hamster Kombat в браузере
 // @author       mudachyo
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
-// @match        https://web.telegram.org/k/#@hamster_kombat_bot
-// @match        https://web.telegram.org/a/#7018368922
+// @match        https://web.telegram.org/*/*
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-kombat.user.js
@@ -93,63 +92,63 @@
         subtree: true
     };
 
-  function createButton() {
-      if (document.getElementById('iframe-open-button')) return; // Ensure only one button is created
+    function createButton() {
+        if (document.getElementById('iframe-open-button')) return; 
 
-      const button = document.createElement('button');
-      button.id = 'iframe-open-button';
-      button.textContent = 'Open Iframe';
-      button.style.position = 'fixed';
-      button.style.top = '10px';
-      button.style.right = '10px';
-      button.style.padding = '10px';
-      button.style.backgroundColor = '#007bff';
-      button.style.color = '#ffffff';
-      button.style.border = 'none';
-      button.style.borderRadius = '5px';
-      button.style.cursor = 'pointer';
-      button.style.zIndex = '9999'; // Ensure the button is on top of other elements
+        const button = document.createElement('button');
+        button.id = 'iframe-open-button';
+        button.textContent = 'Open in a new tab';
+        button.style.position = 'fixed';
+        button.style.top = '10px';
+        button.style.right = '10px';
+        button.style.padding = '10px';
+        button.style.backgroundColor = '#007bff';
+        button.style.color = '#ffffff';
+        button.style.border = 'none';
+        button.style.borderRadius = '5px';
+        button.style.cursor = 'pointer';
+        button.style.zIndex = '9999'; 
 
-      button.addEventListener('click', function() {
-          // Check if iframe exists and open it in a new tab
-          const iframe = document.querySelector('iframe');
-          if (iframe && iframe.src) {
-              window.open(iframe.src, '_blank');
-          } else {
-              alert('Iframe not found.');
-          }
-      });
+        button.addEventListener('click', function() {
+            const iframe = document.querySelector('iframe');
+            if (iframe && iframe.src) {
+                window.open(iframe.src, '_blank');
+            } else {
+                alert('Iframe not found.');
+            }
+        });
 
-      document.body.appendChild(button);
-  }
+        document.body.appendChild(button);
+    }
 
-    // Function to continuously check for iframe and create button if needed
-  function checkForIframe() {
-      const iframe = document.querySelector('iframe');
-      // Проверяем, существует ли iframe и начинается ли его src с нужного URL
-      if (iframe && iframe.src.startsWith('https://hamsterkombatgame.io')) {
-          createButton();
-      } else {
-          // Удаляем кнопку, если iframe не найден или не соответствует нужному URL
-          const button = document.getElementById('iframe-open-button');
-          if (button) {
-              button.remove();
-          }
-      }
-      return !!(iframe && iframe.src.startsWith('https://hamsterkombatgame.io')); // Возвращаем true только если iframe найден и ссылка соответствует
-  }
-
-    // Run the iframe check every 1 second
-    const intervalId = setInterval(() => {
-        if (checkForIframe()) {
-            clearInterval(intervalId); // Stop checking once iframe is found and button is created
+    function checkForIframe() {
+        const currentUrl = window.location.href;
+        if (currentUrl.includes('web.telegram.org')) {
+            const iframe = document.querySelector('iframe');
+            if (iframe && iframe.src.startsWith('https://hamsterkombatgame.io')) {
+                createButton();
+            } else {
+                removeButton();
+            }
+        } else {
+            removeButton();
         }
-    }, 1000);
+    }
 
-    // Also handle hash changes
+    function removeButton() {
+        const button = document.getElementById('iframe-open-button');
+        if (button) {
+            button.remove();
+        }
+    }
+
+    // Запускаем проверку каждую секунду
+    setInterval(checkForIframe, 1000);
+
+    // Обрабатываем изменения хэша в URL
     window.addEventListener('hashchange', checkForIframe);
 
-    // Initial check when the script loads
+    // Начальная проверка при загрузке скрипта
     checkForIframe();
 
     // Начинаем наблюдение за изменениями в DOM
