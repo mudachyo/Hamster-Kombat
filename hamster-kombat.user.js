@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Hamster Kombat Web
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @description  Запуск Hamster Kombat в браузере
 // @author       mudachyo
 // @match        *://*.hamsterkombat.io/*
@@ -125,7 +125,7 @@
         const currentUrl = window.location.href;
         if (currentUrl.includes('web.telegram.org')) {
             const iframe = document.querySelector('iframe');
-            if (iframe && iframe.src.startsWith('https://hamsterkombatgame.io')) {
+            if (iframe && iframe.src.includes('hamsterkombat')) {
                 createButton();
             } else {
                 removeButton();
