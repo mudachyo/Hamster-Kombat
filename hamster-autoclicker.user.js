@@ -311,6 +311,8 @@
     }
 
 	function adjustMinigameSizes() {
+        if (window.self !== window.top) return; // Выходим, если скрипт находится в iframe
+
         const puzzle = document.querySelector('.minigame-puzzle');
         if (!puzzle) return; // Выходим, если .minigame-puzzle не найден
 
