@@ -4,8 +4,8 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.5
-// @description  26.08.2024
+// @version      2.6
+// @description  04.09.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -45,7 +45,7 @@
 		maxRetries: 5, // Максимальное количество попыток перед перезагрузкой страницы
 		autoBuyEnabled: false, // Автопокупка по умолчанию выключена
 		maxPaybackHours: 672, // Максимальное время окупаемости в часах для автопокупки (4 недели)
-		isPaused: false
+		isPaused: false // Пауза по умолчанию выключена
 	};
 	
 	const pauseDelay = 2000; 
@@ -266,7 +266,10 @@
 	RU: Сначала примите задания YouTube. Затем нажмите эту кнопку, чтобы сбросить таймер. Вам не нужно будет ждать час, пока задания проверятся, и вы сможете сразу забрать награду.
 	  `;
 
-	  alert(instruction);
+	  if (!localStorage.getItem('instructionShown')) {
+		alert(instruction);
+		localStorage.setItem('instructionShown', 'true');
+	  }
 
 	  for (let i = 0; i < localStorage.length; i++) {
 		let key = localStorage.key(i);
@@ -307,6 +310,26 @@
         return waitUntilEnergy;
     }
 
+	function adjustMinigameSizes() {
+        const puzzle = document.querySelector('.minigame-puzzle');
+        if (!puzzle) return; // Выходим, если .minigame-puzzle не найден
+
+        const minigame = document.querySelector('.minigame');
+        const minigameBg = document.querySelector('.minigame-bg');
+
+        if (minigame) {
+            minigame.style.position = 'fixed';
+            minigame.style.width = '597px';
+            minigame.style.height = '945px';
+        }
+
+        if (minigameBg) {
+            minigameBg.style.position = 'fixed';
+            minigameBg.style.width = '597px';
+            minigameBg.style.height = '945px';
+        }
+    }
+	
 	function performRandomClick() {
 		if (settings.isPaused) {
 			setTimeout(performRandomClick, 1000);
@@ -321,15 +344,18 @@
 		}
 
 		const energyElement = document.getElementsByClassName("user-tap-energy")[0];
-		const buttonElement = document.getElementsByClassName('user-tap-button')[0];
+		const buttonElement = document.querySelector('.user-tap-button');
 
-		if (!energyElement || !buttonElement) {
+		if (!energyElement || !buttonElement || buttonElement.classList.contains('is-morse-mode')) {
 			console.log(`${logPrefix}Element not found, retrying...`, styles.error);
 
 			retryCount++;
 			if (retryCount >= settings.maxRetries) {
-				console.log(`${logPrefix}Max retries reached, but Earn more coins element is not present. Reloading page...`, styles.error);
-				location.reload();
+			console.log(`${logPrefix}Max retries reached, continuing attempts...`, styles.info);
+			retryCount = 0;
+			setTimeout(() => {
+				setTimeout(performRandomClick, getRandomNumber(settings.minInterval, settings.maxInterval));
+			}, 2000);
 			} else {
 				setTimeout(() => {
 					setTimeout(performRandomClick, getRandomNumber(settings.minInterval, settings.maxInterval));
@@ -1261,12 +1287,13 @@
 			}
 			}
 
-		loadSettings();
-		updateSettingsMenu();
-		createPromoCodeButton();
-		setInterval(checkPromoCodeInput, 1000);
-		createResetButton();
-		setInterval(checkForEarnMoreCoins, 1000);
+		loadSettings(); // Load Settings
+		updateSettingsMenu(); // Update Settings Menu
+		createPromoCodeButton(); // Create Promo Code Button
+		setInterval(checkPromoCodeInput, 1000); // Check Promo Code Input every second
+		createResetButton(); // Create Reset Button
+		setInterval(checkForEarnMoreCoins, 1000); // Check for Earn More Coins every second
+		setInterval(adjustMinigameSizes, 2000); // Adjust minigame sizes every 2 seconds
 
 		function toggleScriptPause() {
 		  settings.isPaused = !settings.isPaused;
