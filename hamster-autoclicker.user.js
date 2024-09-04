@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.6
+// @version      2.7
 // @description  04.09.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -311,26 +311,35 @@
     }
 
 	function adjustMinigameSizes() {
-        if (window.self !== window.top) return; // Выходим, если скрипт находится в iframe
-
-        const puzzle = document.querySelector('.minigame-puzzle');
-        if (!puzzle) return; // Выходим, если .minigame-puzzle не найден
-
-        const minigame = document.querySelector('.minigame');
-        const minigameBg = document.querySelector('.minigame-bg');
-
-        if (minigame) {
-            minigame.style.position = 'fixed';
-            minigame.style.width = '597px';
-            minigame.style.height = '945px';
-        }
-
-        if (minigameBg) {
-            minigameBg.style.position = 'fixed';
-            minigameBg.style.width = '597px';
-            minigameBg.style.height = '945px';
-        }
-    }
+		if (window.self !== window.top) return;
+	
+		const puzzle = document.querySelector('.minigame-puzzle');
+		if (!puzzle) return;
+	
+		const minigame = document.querySelector('.minigame');
+		const minigameBg = document.querySelector('.minigame-bg');
+	
+		if (minigame) {
+			minigame.style.position = 'fixed';
+			minigame.style.width = '597px';
+			minigame.style.height = '945px';
+		}
+	
+		if (minigameBg) {
+			minigameBg.style.position = 'fixed';
+			minigameBg.style.width = '597px';
+			minigameBg.style.height = '945px';
+		}
+	
+		// Модификация игры с ключами
+		const defaultStringify = JSON.stringify;
+		JSON.stringify = function (gameData) {
+			if (gameData?.level) {
+				gameData.level = '- - - - - -.- - - - - -.- - 0 0 - -.- - - - - -.- - - - - -.- - - - - -';
+			}
+			return defaultStringify(gameData);
+		};
+	}
 	
 	function performRandomClick() {
 		if (settings.isPaused) {
@@ -1295,7 +1304,7 @@
 		setInterval(checkPromoCodeInput, 1000); // Check Promo Code Input every second
 		createResetButton(); // Create Reset Button
 		setInterval(checkForEarnMoreCoins, 1000); // Check for Earn More Coins every second
-		setInterval(adjustMinigameSizes, 2000); // Adjust minigame sizes every 2 seconds
+		setInterval(adjustMinigameSizes, 1000); // Adjust minigame sizes every 1 second
 
 		function toggleScriptPause() {
 		  settings.isPaused = !settings.isPaused;
