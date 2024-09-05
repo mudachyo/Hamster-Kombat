@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.7
+// @version      2.8
 // @description  04.09.2024
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
@@ -288,6 +288,40 @@
 	  alert("EN: The YouTube quest timer has been successfully reset! If you have already accepted the quests, you can collect the reward for them.\n\nRU: Таймер YouTube-заданий успешно сброшен! Если вы уже приняли задания, вы можете забрать за них награду.");
 	}
 
+	let messageRemoved = false;
+
+	function checkForDisabledButton() {
+		if (messageRemoved) return;
+
+		const disabledButton = document.querySelector('.button:disabled.button-primary');
+		const messageElement = document.getElementById('minigame-message');
+
+		if (window.location.href.includes('playground') && disabledButton) {
+			if (!messageElement) {
+				const newMessageElement = document.createElement('div');
+				newMessageElement.id = 'minigame-message';
+				newMessageElement.style.position = 'fixed';
+				newMessageElement.style.top = '10px';
+				newMessageElement.style.left = '50%';
+				newMessageElement.style.transform = 'translateX(-50%)';
+				newMessageElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+				newMessageElement.style.color = 'white';
+				newMessageElement.style.padding = '10px';
+				newMessageElement.style.borderRadius = '5px';
+				newMessageElement.style.zIndex = '1000';
+				newMessageElement.innerHTML = 'Если у вас не загружается миниигра, то вам нужно открыть игру в новом окне (синяя кнопка справа сверху)<br>If the minigame does not load, you need to open the game in a new window (blue button at the top right)';
+				document.body.appendChild(newMessageElement);
+			}
+		} else {
+			if (messageElement) {
+				messageElement.remove();
+				messageRemoved = true;
+			}
+		}
+	}
+
+	setInterval(checkForDisabledButton, 1000);
+
 	function checkForEarnMoreCoins() {
 	  const earnMoreCoinsElement = document.querySelector('div.earn-top-title[style*="opacity: 1"]');
 	  const resetButton = document.querySelector('.reset-timer-button');
@@ -321,14 +355,14 @@
 	
 		if (minigame) {
 			minigame.style.position = 'fixed';
-			minigame.style.width = '597px';
-			minigame.style.height = '945px';
+			minigame.style.width = '418px'; // 597px уменьшено на 30%
+			minigame.style.height = '661px'; // 945px уменьшено на 30%
 		}
 	
 		if (minigameBg) {
 			minigameBg.style.position = 'fixed';
-			minigameBg.style.width = '597px';
-			minigameBg.style.height = '945px';
+			minigameBg.style.width = '418px'; // 597px уменьшено на 30%
+			minigameBg.style.height = '661px'; // 945px уменьшено на 30%
 		}
 	
 		// Модификация игры с ключами
@@ -710,6 +744,13 @@
 	  for (const code of promoCodes) {
 		if (code.trim() === '') {
 		  remainingCount--;
+		  continue;
+		}
+
+		const claimButton = document.querySelector('.bottom-sheet-button.button.button-primary.button-default span');
+		if (claimButton && claimButton.textContent === 'Claim') {
+		  claimButton.click();
+		  await new Promise(resolve => setTimeout(resolve, 2000));
 		  continue;
 		}
 
