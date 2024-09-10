@@ -4,8 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.8
-// @description  04.09.2024
+// @version      2.9
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -678,6 +677,17 @@
 		};
 	}
 
+	function checkAndClaimDailyReward() {
+		const dailyRewardButton = document.querySelector('.daily-reward-bottom-button .button.button-primary.button-large span');
+		if (dailyRewardButton && dailyRewardButton.textContent === 'Claim') {
+			dailyRewardButton.click();
+			console.log(`${logPrefix}Daily reward claimed`, styles.success);
+		}
+	}
+
+	setInterval(checkAndClaimDailyReward, 5000);
+
+	
 	function createPromoCodeButton() {
 	  const promoCodeButton = document.createElement('button');
 	  promoCodeButton.className = 'promo-code-button';
@@ -721,25 +731,54 @@
 		  <button class="close-button">×</button>
 		</div>
 		<textarea id="promoCodeInput" rows="10" cols="30" placeholder="Enter one promo code per line"></textarea>
+		<div class="slider-container">
+		  <label for="minTimeInput">Min Time (seconds):</label>
+		  <input type="range" id="minTimeInput" min="1" max="7200" value="10">
+		  <span id="minTimeValue">10</span>
+		</div>
+		<div class="slider-container">
+		  <label for="maxTimeInput">Max Time (seconds):</label>
+		  <input type="range" id="maxTimeInput" min="1" max="7200" value="15">
+		  <span id="maxTimeValue">15</span>
+		</div>
 		<button id="startPromoCodeButton">Start</button>
+		<button id="shufflePromoCodeButton">Shuffle</button>
 		<div id="promoCodeStats"></div>
+		<div id="promoCodeTimer">Next code in: <span id="promoCodeTimerValue">0</span> seconds</div>
 	  `;
 	  document.body.appendChild(promoCodeWindow);
 	  
 	  document.getElementById('startPromoCodeButton').onclick = startPromoCodeEntry;
+	  document.getElementById('shufflePromoCodeButton').onclick = shufflePromoCodes;
 	  document.querySelector('.promo-code-window .close-button').onclick = () => {
 		document.body.removeChild(promoCodeWindow);
 		promoCodeWindow = null;
 	  };
+
+	  const minTimeInput = document.getElementById('minTimeInput');
+	  const maxTimeInput = document.getElementById('maxTimeInput');
+	  const minTimeValue = document.getElementById('minTimeValue');
+	  const maxTimeValue = document.getElementById('maxTimeValue');
+
+	  minTimeInput.oninput = () => {
+		minTimeValue.textContent = minTimeInput.value;
+	  };
+
+	  maxTimeInput.oninput = () => {
+		maxTimeValue.textContent = maxTimeInput.value;
+	  };
 	}
 	
 	async function startPromoCodeEntry() {
-	  const promoCodes = document.getElementById('promoCodeInput').value.split('\n');
+	  let promoCodes = document.getElementById('promoCodeInput').value.split('\n');
 	  const inputField = document.querySelector('.promocode-input-container input');
 	  const redeemButton = document.querySelector('.promocode-input-container button');
 	  let successCount = 0;
 	  let errorCount = 0;
 	  let remainingCount = promoCodes.length;
+
+	  const minTime = parseInt(document.getElementById('minTimeInput').value, 10);
+	  const maxTime = parseInt(document.getElementById('maxTimeInput').value, 10);
 
 	  for (const code of promoCodes) {
 		if (code.trim() === '') {
@@ -774,7 +813,12 @@
 
 		updatePromoCodeStats(successCount, errorCount, remainingCount);
 		
-		await new Promise(resolve => setTimeout(resolve, Math.random() * 8000 + 7000));
+		const waitTime = Math.random() * (maxTime - minTime) + minTime;
+		await startPromoCodeTimer(waitTime);
+
+		// Удаление использованного кода из списка
+		promoCodes = promoCodes.filter(c => c !== code);
+		document.getElementById('promoCodeInput').value = promoCodes.join('\n');
 	  }
 	}
 
@@ -803,6 +847,27 @@
 		Error: <span class="error-count">${error}</span> | 
 		Remaining: <span class="remaining-count">${remaining}</span>
 	  `;
+	}
+
+	async function startPromoCodeTimer(waitTime) {
+	  const timerElement = document.getElementById('promoCodeTimerValue');
+	  let remainingTime = waitTime;
+	  while (remainingTime > 0) {
+		timerElement.textContent = remainingTime.toFixed(1);
+		await new Promise(resolve => setTimeout(resolve, 100));
+		remainingTime -= 0.1;
+	  }
+	  timerElement.textContent = '0';
+	}
+
+	function shufflePromoCodes() {
+	  const promoCodeInput = document.getElementById('promoCodeInput');
+	  const promoCodes = promoCodeInput.value.split('\n').filter(code => code.trim() !== '');
+	  for (let i = promoCodes.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[promoCodes[i], promoCodes[j]] = [promoCodes[j], promoCodes[i]];
+	  }
+	  promoCodeInput.value = promoCodes.join('\n');
 	}
 	
 	const promoCodeStyles = `
@@ -862,10 +927,37 @@
 		border-radius: 4px;
 		padding: 8px;
 	  }
+	  .slider-container {
+		margin-bottom: 15px;
+	  }
+	  .slider-container label {
+		display: block;
+		margin-bottom: 5px;
+		color: #61afef;
+	  }
+	  .slider-container input[type="range"] {
+		width: 100%;
+	  }
+	  .slider-container span {
+		display: block;
+		text-align: center;
+		color: #abb2bf;
+	  }
 	  #startPromoCodeButton {
 		width: 100%;
 		padding: 8px;
 		background-color: #98c379;
+		color: #282c34;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-weight: bold;
+		margin-bottom: 10px;
+	  }
+	  #shufflePromoCodeButton {
+		width: 100%;
+		padding: 8px;
+		background-color: #c678dd;
 		color: #282c34;
 		border: none;
 		border-radius: 4px;
@@ -889,6 +981,16 @@
 	  #promoCodeStats .remaining-count {
 		color: #61afef;
 		font-weight: bold;
+	  }
+	  #promoCodeTimer {
+		text-align: center;
+		font-size: 14px;
+		color: #abb2bf;
+		margin-top: 10px;
+	  }
+	  #promoCodeTimerValue {
+		font-weight: bold;
+		color: #61afef;
 	  }
 	`;
 	document.head.appendChild(document.createElement('style')).textContent += promoCodeStyles;
