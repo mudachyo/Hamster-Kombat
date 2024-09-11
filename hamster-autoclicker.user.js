@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.9
+// @version      2.9.1
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -850,15 +850,16 @@
 	}
 
 	async function startPromoCodeTimer(waitTime) {
-	  const timerElement = document.getElementById('promoCodeTimerValue');
-	  let remainingTime = waitTime;
-	  while (remainingTime > 0) {
-		timerElement.textContent = remainingTime.toFixed(1);
-		await new Promise(resolve => setTimeout(resolve, 100));
-		remainingTime -= 0.1;
-	  }
-	  timerElement.textContent = '0';
-	}
+        const timerElement = document.getElementById('promoCodeTimerValue');
+        let claimTime = new Date().getTime()+waitTime*1000
+        while (true) {
+            if(new Date().getTime()>claimTime) break;
+            let remainingTime = (claimTime-new Date().getTime())/1000
+            timerElement.textContent = remainingTime.toFixed(1);
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        timerElement.textContent = '0';
+    }
 
 	function shufflePromoCodes() {
 	  const promoCodeInput = document.getElementById('promoCodeInput');
