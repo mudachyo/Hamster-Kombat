@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      2.9.1
+// @version      3.0
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -770,7 +770,7 @@
 	}
 	
 	async function startPromoCodeEntry() {
-	  let promoCodes = document.getElementById('promoCodeInput').value.split('\n');
+	  let promoCodes = document.getElementById('promoCodeInput').value.split('\n').filter(code => code.trim() !== '');
 	  const inputField = document.querySelector('.promocode-input-container input');
 	  const redeemButton = document.querySelector('.promocode-input-container button');
 	  let successCount = 0;
@@ -780,11 +780,10 @@
 	  const minTime = parseInt(document.getElementById('minTimeInput').value, 10);
 	  const maxTime = parseInt(document.getElementById('maxTimeInput').value, 10);
 
-	  for (const code of promoCodes) {
-		if (code.trim() === '') {
-		  remainingCount--;
-		  continue;
-		}
+	  updatePromoCodeStats(successCount, errorCount, remainingCount);
+
+	  while (promoCodes.length > 0) {
+		const code = promoCodes[0];
 
 		const claimButton = document.querySelector('.bottom-sheet-button.button.button-primary.button-default span');
 		if (claimButton && claimButton.textContent === 'Claim') {
@@ -811,14 +810,15 @@
 		}
 		remainingCount--;
 
+		promoCodes.shift();
+		document.getElementById('promoCodeInput').value = promoCodes.join('\n');
+
 		updatePromoCodeStats(successCount, errorCount, remainingCount);
 		
-		const waitTime = Math.random() * (maxTime - minTime) + minTime;
-		await startPromoCodeTimer(waitTime);
-
-		// Удаление использованного кода из списка
-		promoCodes = promoCodes.filter(c => c !== code);
-		document.getElementById('promoCodeInput').value = promoCodes.join('\n');
+		if (remainingCount > 0) {
+		  const waitTime = Math.random() * (maxTime - minTime) + minTime;
+		  await startPromoCodeTimer(waitTime);
+		}
 	  }
 	}
 
