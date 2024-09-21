@@ -43,11 +43,13 @@
 		maxEnergyRefillDelay: 180000, // Максимальная задержка в миллисекундах для пополнения энергии (180 секунд)
 		maxRetries: 5, // Максимальное количество попыток перед перезагрузкой страницы
 		autoBuyEnabled: false, // Автопокупка по умолчанию выключена
+		minAutoBuyRetryDelay: 120000, // Минимальная задержка в миллисекундах для повторной попытки купить карту (120 секунд)
+		maxAutoBuyRetryDelay: 240000, // Максимальная задержка в миллисекундах для повторной попытки купить карту (240 секунд)
 		maxPaybackHours: 672, // Максимальное время окупаемости в часах для автопокупки (4 недели)
 		isPaused: false // Пауза по умолчанию выключена
 	};
-	
-	const pauseDelay = 2000; 
+
+	const pauseDelay = 2000;
 	const dotDelay = 1;
 	const dashDelay = 750;
 	const multiplyTap = 16;
@@ -74,23 +76,23 @@
 	function getRandomNumber(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
-	
+
 	async function sendMorseCode(text) {
 		const morseString = textToMorse(text);
 		console.log('Converted Morse Code:', morseString);
 		await textToTap(morseString);
 	}
-	
+
 	function textToMorse(text) {
 		const morseCodeMap = {
 			'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
 			'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
 			'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
 			'Y': '-.--', 'Z': '--..', ' ': ' ',
-			'0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', 
+			'0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-',
 			'5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
 		};
-	
+
 		return text.toUpperCase().split('').map(char => {
 			if (char in morseCodeMap) {
 				return morseCodeMap[char];
@@ -101,51 +103,51 @@
 		}).join(' ');
 	}
 
-    async function dotTap(button) {
-        if (energyLevel() > 100) {
-            await simulateTap(button, dotDelay);
-        }
-    }
+	async function dotTap(button) {
+		if (energyLevel() > 100) {
+			await simulateTap(button, dotDelay);
+		}
+	}
 
 	function findTapButton() {
 		return document.querySelector('.user-tap-button');
 	}
-    async function dashTap(button) {
-        if (energyLevel() > 100) {
-            await simulateTap(button, dashDelay);
-        }
-    }
+	async function dashTap(button) {
+		if (energyLevel() > 100) {
+			await simulateTap(button, dashDelay);
+		}
+	}
 
-    function pauseBetweenLetters() {
-        return new Promise(resolve => setTimeout(resolve, pauseDelay));
-    }
+	function pauseBetweenLetters() {
+		return new Promise(resolve => setTimeout(resolve, pauseDelay));
+	}
 
 	async function fetchHamsterData() {
 		const token = localStorage.getItem('authToken');
-		
+
 		if (!token) {
 			console.error("Токен не найден в Local Storage");
 			return null;
 		}
-	
+
 		const url = `${baseUrl}/clicker/config`;
 		const headers = {
 			'Authorization': `Bearer ${token}`,
 			'Content-Type': 'application/json'
 		};
-	
+
 		try {
 			const response = await fetch(url, {
 				method: 'POST',
 				headers: headers
 			});
-	
+
 			if (!response.ok) {
 				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-	
+
 			const data = await response.json();
-	
+
 			if (data.dailyCipher) {
 				const encodedCipher = data.dailyCipher.cipher;
 				const correctedCipher = encodedCipher.slice(0, 3) + encodedCipher.slice(4);
@@ -156,7 +158,7 @@
 		} catch (error) {
 			console.error("Ошибка при получении данных:", error);
 		}
-		
+
 		return null;
 	}
 
@@ -197,37 +199,37 @@
 
 		await pauseBetweenLetters();
 	}
-	
+
 	function energyLevel() {
-        const energyElement = document.querySelector(".user-tap-energy p");
-        if (energyElement) {
-            return parseInt(energyElement.textContent.split(" / ")[0], 10);
-        }
-        return 0;
-    }
-	
+		const energyElement = document.querySelector(".user-tap-energy p");
+		if (energyElement) {
+			return parseInt(energyElement.textContent.split(" / ")[0], 10);
+		}
+		return 0;
+	}
+
 	async function simulateTap(button, delay) {
-        const rect = button.getBoundingClientRect();
-        const centerX = rect.left + (rect.width / 2);
-        const centerY = rect.top + (rect.height / 2);
+		const rect = button.getBoundingClientRect();
+		const centerX = rect.left + (rect.width / 2);
+		const centerY = rect.top + (rect.height / 2);
 
-        const downEvent = new PointerEvent('pointerdown', {
-            bubbles: true,
-            clientX: centerX,
-            clientY: centerY
-        });
+		const downEvent = new PointerEvent('pointerdown', {
+			bubbles: true,
+			clientX: centerX,
+			clientY: centerY
+		});
 
-        const upEvent = new PointerEvent('pointerup', {
-            bubbles: true,
-            clientX: centerX,
-            clientY: centerY
-        });
+		const upEvent = new PointerEvent('pointerup', {
+			bubbles: true,
+			clientX: centerX,
+			clientY: centerY
+		});
 
-        button.dispatchEvent(downEvent);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        button.dispatchEvent(upEvent);
-        await new Promise(resolve => setTimeout(resolve, delay));
-    }
+		button.dispatchEvent(downEvent);
+		await new Promise(resolve => setTimeout(resolve, delay));
+		button.dispatchEvent(upEvent);
+		await new Promise(resolve => setTimeout(resolve, delay));
+	}
 
 	function createResetButton() {
 	  const resetButton = document.createElement('button');
@@ -331,39 +333,39 @@
 		resetButton.style.display = 'none';
 	  }
 	}
-	
-    function actionCanProceed(energyNow, clickWord, clickTime, multiplyTap) {
-        let energyCost = Math.ceil((clickWord * multiplyTap) - ((clickTime / 1000) * 3));
-        let waitUntilEnergy = 0;
 
-        if (energyCost > energyNow) {
-            waitUntilEnergy = Math.ceil((energyCost - energyNow) / 3 + 3);
-        }
+	function actionCanProceed(energyNow, clickWord, clickTime, multiplyTap) {
+		let energyCost = Math.ceil((clickWord * multiplyTap) - ((clickTime / 1000) * 3));
+		let waitUntilEnergy = 0;
 
-        return waitUntilEnergy;
-    }
+		if (energyCost > energyNow) {
+			waitUntilEnergy = Math.ceil((energyCost - energyNow) / 3 + 3);
+		}
+
+		return waitUntilEnergy;
+	}
 
 	function adjustMinigameSizes() {
 		if (window.self !== window.top) return;
-	
+
 		const puzzle = document.querySelector('.minigame-puzzle');
 		if (!puzzle) return;
-	
+
 		const minigame = document.querySelector('.minigame');
 		const minigameBg = document.querySelector('.minigame-bg');
-	
+
 		if (minigame) {
 			minigame.style.position = 'fixed';
 			minigame.style.width = '418px'; // 597px уменьшено на 30%
 			minigame.style.height = '661px'; // 945px уменьшено на 30%
 		}
-	
+
 		if (minigameBg) {
 			minigameBg.style.position = 'fixed';
 			minigameBg.style.width = '418px'; // 597px уменьшено на 30%
 			minigameBg.style.height = '661px'; // 945px уменьшено на 30%
 		}
-	
+
 		// Модификация игры с ключами
 		const defaultStringify = JSON.stringify;
 		JSON.stringify = function (gameData) {
@@ -373,7 +375,7 @@
 			return defaultStringify(gameData);
 		};
 	}
-	
+
 	function performRandomClick() {
 		if (settings.isPaused) {
 			setTimeout(performRandomClick, 1000);
@@ -457,11 +459,11 @@
 		if (!settings.autoBuyEnabled) {
 			return;
 		}
-	
+
 		try {
 			const { balance } = await updateClickerData();
 			const upgradesForBuy = window.useNuxtApp().$pinia._s.get('upgrade').upgradesForBuy;
-	
+
 			const sortedData = upgradesForBuy
 				.filter(item => {
 					const paybackHours = item.price / item.profitPerHourDelta;
@@ -472,21 +474,33 @@
 					paybackTime: item.price / item.profitPerHourDelta
 				}))
 				.sort((a, b) => a.paybackTime - b.paybackTime);
-	
+
 			if (sortedData.length > 0) {
-				const bestCard = sortedData[0];
-	
+				let bestCard;
+				let sortedDataPrice = sortedData.filter(item => {
+					return item.price < balance;
+				})
+				if (sortedDataPrice.length > 0) {
+					// If balance enough to buy some suitable card, do it
+					bestCard = sortedDataPrice[0];
+				} else {
+					// If balance not enough to buy some suitable card, check best card
+					bestCard = sortedData[0];
+				}
+
 				if (balance < bestCard.price) {
-					console.log(`${logPrefix}Waiting for sufficient balance to buy (${bestCard.name})`, styles.info);
-					setTimeout(autoBuy, getRandomNumber(3000, 3500));
+					// Using new config for Auto-Buy Retry Delay
+					const randomAutoBuyRetryDelay = getRandomNumber(settings.minAutoBuyRetryDelay, settings.maxAutoBuyRetryDelay);
+					console.log(`${logPrefix}Waiting for ${randomAutoBuyRetryDelay / 1000} seconds, before next check sufficient balance to buy (${bestCard.name}). Balance: (${balance.toFixed(2)}), CardPrice: (${bestCard.price})`, styles.info);
+					setTimeout(autoBuy, randomAutoBuyRetryDelay);
 					return;
 				}
-	
+
 				try {
 					const delay = getRandomNumber(5000, 10000);
 					console.log(`${logPrefix}Waiting for ${delay / 1000} seconds before buying (${bestCard.name})`, styles.info);
 					await new Promise(resolve => setTimeout(resolve, delay));
-	
+
 					await window.useNuxtApp().$pinia._s.get('upgrade').postBuyUpgrade(bestCard.id);
 					console.log(`${logPrefix}Success buy (${bestCard.name})`, styles.success);
 				} catch (e) {
@@ -496,7 +510,7 @@
 		} catch (e) {
 			console.log(`${logPrefix}Error in autoBuy function: ${e.message}`, styles.error);
 		}
-	
+
 		if (settings.autoBuyEnabled) {
 			setTimeout(autoBuy, getRandomNumber(3000, 3500));
 		}
@@ -508,20 +522,20 @@
 			if (!upgradeStore || !upgradeStore.upgradesForBuy) {
 				throw new Error('Upgrade data not available');
 			}
-	
+
 			let upgradesForBuy = upgradeStore.upgradesForBuy;
-			
+
 			upgradesForBuy.sort((a, b) => {
 				const paybackTimeA = a.profitPerHourDelta ? (a.price / a.profitPerHourDelta) : Infinity;
 				const paybackTimeB = b.profitPerHourDelta ? (b.price / b.profitPerHourDelta) : Infinity;
 				return paybackTimeA - paybackTimeB;
 			});
-	
+
 			let tableContent = `
 			<style>
-				body { 
-					font-family: Arial, sans-serif; 
-					background-color: #1e1e1e; 
+				body {
+					font-family: Arial, sans-serif;
+					background-color: #1e1e1e;
 					color: #e0e0e0;
 					margin: 0;
 					padding: 20px;
@@ -533,8 +547,8 @@
 					margin-bottom: 20px;
 					flex-wrap: wrap;
 				}
-				h1 { 
-					color: #61afef; 
+				h1 {
+					color: #61afef;
 					margin: 0;
 					margin-right: 20px;
 				}
@@ -562,20 +576,20 @@
 				#donateButton {
 					background-color: #e5c07b;
 				}
-				table { 
-					border-collapse: collapse; 
-					width: 100%; 
-					background-color: #2d2d2d; 
+				table {
+					border-collapse: collapse;
+					width: 100%;
+					background-color: #2d2d2d;
 					margin-top: 20px;
 				}
-				th, td { 
-					border: 1px solid #4a4a4a; 
-					padding: 12px; 
-					text-align: left; 
+				th, td {
+					border: 1px solid #4a4a4a;
+					padding: 12px;
+					text-align: left;
 				}
-				th { 
-					background-color: #383838; 
-					color: #61afef; 
+				th {
+					background-color: #383838;
+					color: #61afef;
 				}
 				tr:nth-child(even) { background-color: #333333; }
 				tr:hover { background-color: #3a3a3a; }
@@ -600,7 +614,7 @@
 					<th>Profit per Hour</th>
 					<th>Payback Time (hours)</th>
 				</tr>`;
-	
+
 			upgradesForBuy.forEach(item => {
 				const paybackTime = item.profitPerHourDelta ? (item.price / item.profitPerHourDelta) : Infinity;
 				const paybackClass = paybackTime <= settings.maxPaybackHours ? 'payback-good' : 'payback-bad';
@@ -617,9 +631,9 @@
 					<td class="${paybackClass}">${paybackTime !== Infinity ? paybackTime.toFixed(2) : 'N/A'}</td>
 				</tr>`;
 			});
-	
+
 			tableContent += '</table>';
-	
+
 			const newWindow = window.open('', '_blank');
 			newWindow.document.write(`
 			<html>
@@ -656,7 +670,7 @@
 				</body>
 			</html>`);
 			newWindow.document.close();
-	
+
 			console.log(`${logPrefix}Upgrades data displayed in new window`, styles.success);
 		} catch (error) {
 			console.log(`${logPrefix}Error displaying upgrades: ${error.message}`, styles.error);
@@ -687,7 +701,7 @@
 
 	setInterval(checkAndClaimDailyReward, 5000);
 
-	
+
 	function createPromoCodeButton() {
 	  const promoCodeButton = document.createElement('button');
 	  promoCodeButton.className = 'promo-code-button';
@@ -696,12 +710,12 @@
 	  promoCodeButton.onclick = openPromoCodeWindow;
 	  document.body.appendChild(promoCodeButton);
 	}
-	
+
 	function checkPromoCodeInput() {
 	  const promoCodeInput = document.querySelector('.promocode-input-container');
 	  const promoCodeButton = document.querySelector('.promo-code-button');
 	  const morseButton = document.querySelector('.morse-button');
-		
+
 	  if (promoCodeInput && promoCodeButton) {
 		promoCodeButton.style.display = 'block';
 		if (morseButton && morseButton.style.display !== 'none') {
@@ -713,7 +727,7 @@
 		promoCodeButton.style.display = 'none';
 	  }
 	}
-	
+
 	let promoCodeWindow = null;
 
 	function openPromoCodeWindow() {
@@ -747,7 +761,7 @@
 		<div id="promoCodeTimer">Next code in: <span id="promoCodeTimerValue">0</span> seconds</div>
 	  `;
 	  document.body.appendChild(promoCodeWindow);
-	  
+
 	  document.getElementById('startPromoCodeButton').onclick = startPromoCodeEntry;
 	  document.getElementById('shufflePromoCodeButton').onclick = shufflePromoCodes;
 	  document.querySelector('.promo-code-window .close-button').onclick = () => {
@@ -768,7 +782,7 @@
 		maxTimeValue.textContent = maxTimeInput.value;
 	  };
 	}
-	
+
 	async function startPromoCodeEntry() {
 	  let promoCodes = document.getElementById('promoCodeInput').value.split('\n').filter(code => code.trim() !== '');
 	  const inputField = document.querySelector('.promocode-input-container input');
@@ -795,13 +809,13 @@
 		const cleanCode = code.trim().replace(/\s/g, '');
 		inputField.value = cleanCode;
 		inputField.dispatchEvent(new Event('input', { bubbles: true }));
-		
+
 		await new Promise(resolve => setTimeout(resolve, 1000));
-		
+
 		redeemButton.click();
-		
+
 		await new Promise(resolve => setTimeout(resolve, 2000));
-		
+
 		const result = await waitForPromoCodeResult();
 		if (result === 'success') {
 		  successCount++;
@@ -814,7 +828,7 @@
 		document.getElementById('promoCodeInput').value = promoCodes.join('\n');
 
 		updatePromoCodeStats(successCount, errorCount, remainingCount);
-		
+
 		if (remainingCount > 0) {
 		  const waitTime = Math.random() * (maxTime - minTime) + minTime;
 		  await startPromoCodeTimer(waitTime);
@@ -827,7 +841,7 @@
 		const checkResult = () => {
 		  const successElement = document.querySelector('.promocode-text-success');
 		  const errorElement = document.querySelector('.promocode-text-error');
-		  
+
 		  if (successElement && successElement.style.display !== 'none') {
 			resolve('success');
 		  } else if (errorElement && errorElement.style.display !== 'none') {
@@ -843,23 +857,23 @@
 	function updatePromoCodeStats(success, error, remaining) {
 	  const statsElement = document.getElementById('promoCodeStats');
 	  statsElement.innerHTML = `
-		Success: <span class="success-count">${success}</span> | 
-		Error: <span class="error-count">${error}</span> | 
+		Success: <span class="success-count">${success}</span> |
+		Error: <span class="error-count">${error}</span> |
 		Remaining: <span class="remaining-count">${remaining}</span>
 	  `;
 	}
 
 	async function startPromoCodeTimer(waitTime) {
-        const timerElement = document.getElementById('promoCodeTimerValue');
-        let claimTime = new Date().getTime()+waitTime*1000
-        while (true) {
-            if(new Date().getTime()>claimTime) break;
-            let remainingTime = (claimTime-new Date().getTime())/1000
-            timerElement.textContent = remainingTime.toFixed(1);
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        timerElement.textContent = '0';
-    }
+		const timerElement = document.getElementById('promoCodeTimerValue');
+		let claimTime = new Date().getTime()+waitTime*1000
+		while (true) {
+			if(new Date().getTime()>claimTime) break;
+			let remainingTime = (claimTime-new Date().getTime())/1000
+			timerElement.textContent = remainingTime.toFixed(1);
+			await new Promise(resolve => setTimeout(resolve, 100));
+		}
+		timerElement.textContent = '0';
+	}
 
 	function shufflePromoCodes() {
 	  const promoCodeInput = document.getElementById('promoCodeInput');
@@ -870,7 +884,7 @@
 	  }
 	  promoCodeInput.value = promoCodes.join('\n');
 	}
-	
+
 	const promoCodeStyles = `
 	  .promo-code-button {
 		position: fixed;
@@ -1039,36 +1053,33 @@
 		menuTitle.appendChild(closeButton);
 		settingsMenu.appendChild(menuTitle);
 
-		settingsMenu.appendChild(createSettingElement('Min Energy', 'minEnergy', 'range', 5, 6000, 5,
+		settingsMenu.appendChild(createSettingElement('Min Energy', 'minEnergy', 'range', 5, 6000, null, 5,
 			'EN: Minimum energy required to click.<br>' +
 			'RU: Минимальная энергия, необходимая для клика.'));
-		settingsMenu.appendChild(createSettingElement('Min Interval (ms)', 'minInterval', 'range', 10, 1000, 10,
-			'EN: Minimum interval between clicks.<br>' +
-			'RU: Минимальный интервал между кликами.'));
-		settingsMenu.appendChild(createSettingElement('Max Interval (ms)', 'maxInterval', 'range', 10, 10000, 10,
-			'EN: Maximum interval between clicks.<br>' +
-			'RU: Максимальный интервал между кликами.'));
-		settingsMenu.appendChild(createSettingElement('Min Refill Delay (ms)', 'minEnergyRefillDelay', 'range', 10, 1200000, 10,
-			'EN: Minimum energy refill delay in seconds.<br>' +
-			'RU: Минимальная задержка пополнения энергии.'));
-		settingsMenu.appendChild(createSettingElement('Max Refill Delay (ms)', 'maxEnergyRefillDelay', 'range', 10, 1200000, 10,
-			'EN: Maximum energy refill delay in seconds.<br>' +
-			'RU: Максимальная задержка пополнения энергии.'));
+		settingsMenu.appendChild(createSettingElement('Interval between clicks (ms)', 'Interval', 'double-range', 10, 1000, 10000, 10,
+			'EN: Interval between clicks.<br>' +
+			'RU: Интервал между кликами.'));
+		settingsMenu.appendChild(createSettingElement('Refill Delay (ms)', 'EnergyRefillDelay', 'double-range', 10, 1200000, 1200000, 10,
+			'EN: Energy refill delay in seconds.<br>' +
+			'RU: Задержка пополнения энергии.'));
+		settingsMenu.appendChild(createSettingElement('Auto-Buy Retry Delay (ms)', 'AutoBuyRetryDelay', 'double-range', 10, 600000, 1200000, 10,
+			'EN: Delay in retry to auto-purchase cards.<br>' +
+			'RU: Задержка повторной попытки авто-покупки карт.'));
 
 		const autoBuyContainer = document.createElement('div');
 		autoBuyContainer.className = 'setting-item auto-buy-container';
-	
-		const autoBuyCheckbox = createSettingElement('Auto Buy', 'autoBuyEnabled', 'checkbox', null, null, null,
+
+		const autoBuyCheckbox = createSettingElement('Auto Buy', 'autoBuyEnabled', 'checkbox', null, null, null, null,
 			'EN: Automatically buy the most profitable upgrade.<br>' +
 			'RU: Автоматически покупать самое выгодное улучшение.');
-	
-		const maxPaybackHoursInput = createSettingElement('Max Payback Hours', 'maxPaybackHours', 'number', 1, 1000, 1,
+
+		const maxPaybackHoursInput = createSettingElement('Max Payback Hours', 'maxPaybackHours', 'number', 1, 1000, null, 1,
 			'EN: Maximum payback time in hours for auto-buy.<br>' +
 			'RU: Максимальное время окупаемости в часах для автопокупки.');
-	
+
 		autoBuyContainer.appendChild(autoBuyCheckbox);
 		autoBuyContainer.appendChild(maxPaybackHoursInput);
-	
+
 		settingsMenu.appendChild(autoBuyContainer);
 
 		const pauseResumeButton = document.createElement('button');
@@ -1119,7 +1130,11 @@
 			document.getElementById('maxEnergyRefillDelay').value = settings.maxEnergyRefillDelay;
 			document.getElementById('maxEnergyRefillDelayDisplay').textContent = settings.maxEnergyRefillDelay;
 			document.getElementById('autoBuyEnabled').checked = settings.autoBuyEnabled;
-    		document.getElementById('maxPaybackHours').value = settings.maxPaybackHours
+			document.getElementById('minAutoBuyRetryDelay').value = settings.minAutoBuyRetryDelay;
+			document.getElementById('minAutoBuyRetryDelayDisplay').textContent = settings.minAutoBuyRetryDelay;
+			document.getElementById('maxAutoBuyRetryDelay').value = settings.maxAutoBuyRetryDelay;
+			document.getElementById('maxAutoBuyRetryDelayDisplay').textContent = settings.maxAutoBuyRetryDelay;
+			document.getElementById('maxPaybackHours').value = settings.maxPaybackHours
 			document.getElementById('maxPaybackHoursDisplay').textContent = settings.maxPaybackHours;
 			updatePauseButtonState();
 		}
@@ -1167,47 +1182,52 @@
 		  cursor: pointer;
 		  padding: 0;
 		}
-        .setting-item {
-          margin-bottom: 12px;
-        }
-        .setting-label {
-          display: flex;
-          align-items: center;
-          margin-bottom: 4px;
-        }
-        .setting-label-text {
-          color: #e5c07b;
-          margin-right: 5px;
-        }
-        .help-icon {
-          cursor: help;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 14px;
-          height: 14px;
-          border-radius: 50%;
-          background-color: #61afef;
-          color: #282c34;
-          font-size: 10px;
-          font-weight: bold;
-        }
-        .setting-input {
-          display: flex;
-          align-items: center;
-        }
-        .setting-slider {
-          flex-grow: 1;
-          margin-right: 8px;
-        }
-        .setting-value {
-          min-width: 30px;
-          text-align: right;
-          font-size: 11px;
-        }
-        .tooltip {
-          position: relative;
-        }
+		.setting-item {
+		  margin-bottom: 12px;
+		}
+		.setting-label {
+		  display: flex;
+		  align-items: center;
+		  margin-bottom: 4px;
+		}
+		.setting-label-text {
+		  color: #e5c07b;
+		  margin-right: 5px;
+		}
+		.setting-label-min-max {
+		  color: #e5c07b;
+		  margin-right: 5px;
+		  width: 40px;
+		}
+		.help-icon {
+		  cursor: help;
+		  display: inline-flex;
+		  align-items: center;
+		  justify-content: center;
+		  width: 14px;
+		  height: 14px;
+		  border-radius: 50%;
+		  background-color: #61afef;
+		  color: #282c34;
+		  font-size: 10px;
+		  font-weight: bold;
+		}
+		.setting-input {
+		  display: flex;
+		  align-items: center;
+		}
+		.setting-slider {
+		  flex-grow: 1;
+		  margin-right: 8px;
+		}
+		.setting-value {
+		  min-width: 30px;
+		  text-align: right;
+		  font-size: 11px;
+		}
+		.tooltip {
+		  position: relative;
+		}
 		.tooltip .tooltiptext {
 		  visibility: hidden;
 		  width: 200px;
@@ -1226,43 +1246,43 @@
 		  font-size: 11px;
 		  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 		}
-        .tooltip:hover .tooltiptext {
-          visibility: visible;
-          opacity: 1;
-        }
-        .pause-resume-btn {
-          display: block;
-          width: calc(100% - 10px);
-          padding: 8px;
-          margin: 15px 5px;
-          background-color: #98c379;
-          color: #282c34;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          font-weight: bold;
-          font-size: 14px;
-          transition: background-color 0.3s;
-        }
-        .pause-resume-btn:hover {
-          background-color: #7cb668;
-        }
-        .settings-button {
-          position: fixed;
-          bottom: 20px;
-          right: 20px;
-          background-color: rgba(36, 146, 255, 0.8);
-          color: #fff;
-          border: none;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          font-size: 18px;
-          cursor: pointer;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          z-index: 9999;
-        }
-        .social-buttons {
+		.tooltip:hover .tooltiptext {
+		  visibility: visible;
+		  opacity: 1;
+		}
+		.pause-resume-btn {
+		  display: block;
+		  width: calc(100% - 10px);
+		  padding: 8px;
+		  margin: 15px 5px;
+		  background-color: #98c379;
+		  color: #282c34;
+		  border: none;
+		  border-radius: 4px;
+		  cursor: pointer;
+		  font-weight: bold;
+		  font-size: 14px;
+		  transition: background-color 0.3s;
+		}
+		.pause-resume-btn:hover {
+		  background-color: #7cb668;
+		}
+		.settings-button {
+		  position: fixed;
+		  bottom: 20px;
+		  right: 20px;
+		  background-color: rgba(36, 146, 255, 0.8);
+		  color: #fff;
+		  border: none;
+		  border-radius: 50%;
+		  width: 40px;
+		  height: 40px;
+		  font-size: 18px;
+		  cursor: pointer;
+		  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		  z-index: 9999;
+		}
+		.social-buttons {
 		  margin-top: 15px;
 		  display: flex;
 		  justify-content: space-around;
@@ -1344,10 +1364,10 @@
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 		z-index: 9999;
 		}
-      `;
+	  `;
 		document.head.appendChild(style);
 
-		function createSettingElement(label, id, type, min, max, step, tooltipText) {
+		function createSettingElement(label, id, type, min, max1, max2, step, tooltipText) {
 			const container = document.createElement('div');
 			container.className = 'setting-item';
 
@@ -1372,6 +1392,8 @@
 
 			const inputContainer = document.createElement('div');
 			inputContainer.className = 'setting-input';
+			const inputContainer2 = document.createElement('div');
+			inputContainer2.className = 'setting-input';
 
 			let input;
 			if (type === 'checkbox') {
@@ -1387,12 +1409,71 @@
 					}
 				});
 				inputContainer.appendChild(input);
+			} else if (type === 'double-range') {
+				let input1;
+				input1 = document.createElement('input');
+				input1.type = 'range';
+				input1.id = `min${id}`;
+				input1.min = min;
+				input1.max = max1;
+				input1.step = step;
+				input1.value = settings[input1.id];
+				input1.className = 'setting-slider';
+
+				const valueDisplay1 = document.createElement('span');
+				valueDisplay1.id = `${input1.id}Display`;
+				valueDisplay1.textContent = settings[input1.id];
+				valueDisplay1.className = 'setting-value';
+
+				input1.addEventListener('input', (e) => {
+					settings[input1.id] = parseFloat(e.target.value);
+					valueDisplay1.textContent = e.target.value;
+					saveSettings();
+				});
+
+				const labelElement1 = document.createElement('span');
+				labelElement1.className = 'setting-label-min-max';
+				labelElement1.textContent = 'Min:';
+
+				inputContainer.appendChild(labelElement1);
+				inputContainer.appendChild(input1);
+				inputContainer.appendChild(valueDisplay1);
+
+				let input2;
+				input2 = document.createElement('input');
+				input2.type = 'range';
+				input2.id = `max${id}`;
+				input2.min = min;
+				input2.max = max2;
+				input2.step = step;
+				input2.value = settings[input2.id];
+				input2.className = 'setting-slider';
+
+				const valueDisplay2 = document.createElement('span');
+				valueDisplay2.id = `${input2.id}Display`;
+				valueDisplay2.textContent = settings[input2.id];
+				valueDisplay2.className = 'setting-value';
+
+				input2.addEventListener('input', (e) => {
+					settings[input2.id] = parseFloat(e.target.value);
+					valueDisplay2.textContent = e.target.value;
+					saveSettings();
+				});
+
+
+				const labelElement2 = document.createElement('span');
+				labelElement2.className = 'setting-label-min-max';
+				labelElement2.textContent = 'Max:';
+
+				inputContainer2.appendChild(labelElement2);
+				inputContainer2.appendChild(input2);
+				inputContainer2.appendChild(valueDisplay2);
 			} else {
 				input = document.createElement('input');
 				input.type = type;
 				input.id = id;
 				input.min = min;
-				input.max = max;
+				input.max = max1;
 				input.step = step;
 				input.value = settings[id];
 				input.className = 'setting-slider';
@@ -1414,9 +1495,12 @@
 
 			container.appendChild(labelContainer);
 			container.appendChild(inputContainer);
+			if (type === 'double-range') {
+				container.appendChild(inputContainer2);
+			}
 			return container;
 		}
-		
+
 		function updatePauseButtonState() {
 		  const pauseResumeButton = document.querySelector('.pause-resume-btn');
 		  if (pauseResumeButton) {
