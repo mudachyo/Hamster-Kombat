@@ -462,47 +462,49 @@
 		try {
 			const { balance } = await updateClickerData();
 
-			// check target balance for buy
-			if (balance > targetBalance4Buy) {
-				const upgradesForBuy = window.useNuxtApp().$pinia._s.get('upgrade').upgradesForBuy;
+			// check target balance for buy card
+			if (balance < targetBalance4Buy) {
+				const balanceTargetDelay = getRandomNumber(180000, 360000);
+				console.log(`${logPrefix}Waiting for ${balanceTargetDelay / 1000} seconds, for sufficient balance to buy, target: (${targetBalance4Buy}), balance: (${balance})`, styles.info);
+				setTimeout(autoBuy, balanceTargetDelay);
+				return;
+			}
+			const upgradesForBuy = window.useNuxtApp().$pinia._s.get('upgrade').upgradesForBuy;
 
-				const sortedData = upgradesForBuy
-				.filter(item => {
-					const paybackHours = item.price / item.profitPerHourDelta;
-					return item.isAvailable && !item.cooldownSeconds && !item.isExpired && paybackHours <= settings.maxPaybackHours;
-				})
-				.map(item => ({
-					...item,
-					paybackTime: item.price / item.profitPerHourDelta
-				}))
-				.sort((a, b) => a.paybackTime - b.paybackTime);
+			const sortedData = upgradesForBuy
+			.filter(item => {
+				const paybackHours = item.price / item.profitPerHourDelta;
+				return item.isAvailable && !item.cooldownSeconds && !item.isExpired && paybackHours <= settings.maxPaybackHours;
+			})
+			.map(item => ({
+				...item,
+				paybackTime: item.price / item.profitPerHourDelta
+			}))
+			.sort((a, b) => a.paybackTime - b.paybackTime);
 
-				if (sortedData.length > 0) {
-					const bestCard = sortedData[0];
+			if (sortedData.length > 0) {
+				const bestCard = sortedData[0];
 
-					if (balance < bestCard.price) {
-						// set target balance for buy
-						targetBalance4Buy = bestCard.price;
-						console.log(`${logPrefix}Waiting for sufficient balance to buy (${bestCard.name})`, styles.info);
-						setTimeout(autoBuy, getRandomNumber(3000, 3500));
-						return;
-					}
-
-					try {
-						const delay = getRandomNumber(5000, 10000);
-						console.log(`${logPrefix}Waiting for ${delay / 1000} seconds before buying (${bestCard.name})`, styles.info);
-						await new Promise(resolve => setTimeout(resolve, delay));
-
-						await window.useNuxtApp().$pinia._s.get('upgrade').postBuyUpgrade(bestCard.id);
-						// reset target balance for buy
-						targetBalance4Buy = 0;
-						console.log(`${logPrefix}Success buy (${bestCard.name})`, styles.success);
-					} catch (e) {
-						console.log(`${logPrefix}Error buying upgrade: ${e.message}`, styles.error);
-					}
+				if (balance < bestCard.price) {
+					// set target balance for buy
+					targetBalance4Buy = bestCard.price;
+					console.log(`${logPrefix}Waiting for sufficient balance to buy (${bestCard.name})`, styles.info);
+					setTimeout(autoBuy, getRandomNumber(3000, 3500));
+					return;
 				}
-			} else {
-				console.log(`${logPrefix}Waiting for sufficient balance to buy, target: (${targetBalance4Buy}), balance: (${balance})`, styles.info);
+
+				try {
+					const delay = getRandomNumber(5000, 10000);
+					console.log(`${logPrefix}Waiting for ${delay / 1000} seconds before buying (${bestCard.name})`, styles.info);
+					await new Promise(resolve => setTimeout(resolve, delay));
+
+					await window.useNuxtApp().$pinia._s.get('upgrade').postBuyUpgrade(bestCard.id);
+					// reset target balance for buy
+					targetBalance4Buy = 0;
+					console.log(`${logPrefix}Success buy (${bestCard.name})`, styles.success);
+				} catch (e) {
+					console.log(`${logPrefix}Error buying upgrade: ${e.message}`, styles.error);
+				}
 			}
 		} catch (e) {
 			console.log(`${logPrefix}Error in autoBuy function: ${e.message}`, styles.error);
