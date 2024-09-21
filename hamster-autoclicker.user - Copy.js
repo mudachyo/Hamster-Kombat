@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      3.0.2
+// @version      3.0.1
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -260,9 +260,9 @@
 
 	function showInstructionAndResetTimer() {
 	  const instruction = `
-	EN: First, accept the tasks. Then click this button to reset the timer. You won't need to wait an hour for the tasks to be verified, and you can claim the reward immediately.
+	EN: First, accept the YouTube tasks. Then click this button to reset the timer. You won't need to wait an hour for the tasks to be verified, and you can claim the reward immediately.
 
-	RU: Сначала примите задания. Затем нажмите эту кнопку, чтобы сбросить таймер. Вам не нужно будет ждать час, пока задания проверятся, и вы сможете сразу забрать награду.
+	RU: Сначала примите задания YouTube. Затем нажмите эту кнопку, чтобы сбросить таймер. Вам не нужно будет ждать час, пока задания проверятся, и вы сможете сразу забрать награду.
 	  `;
 
 	  if (!localStorage.getItem('instructionShown')) {
@@ -273,7 +273,7 @@
 	  for (let i = 0; i < localStorage.length; i++) {
 		let key = localStorage.key(i);
 
-		if (key.startsWith("hamster_youtube_") || key.startsWith("subscribe_hk_") || key.startsWith("subscribe_x_")) {
+		if (key.startsWith("hamster_youtube_")) {
 		  let unixTime = parseInt(localStorage.getItem(key), 10);
 
 		  if (!isNaN(unixTime)) {
@@ -284,7 +284,7 @@
 		}
 	  }
 
-	  alert("EN: The quest timer has been successfully reset! If you have already accepted the quests, you can collect the reward for them.\n\nRU: Таймер заданий успешно сброшен! Если вы уже приняли задания, вы можете забрать за них награду.");
+	  alert("EN: The YouTube quest timer has been successfully reset! If you have already accepted the quests, you can collect the reward for them.\n\nRU: Таймер YouTube-заданий успешно сброшен! Если вы уже приняли задания, вы можете забрать за них награду.");
 	}
 
 	let messageRemoved = false;
@@ -445,7 +445,7 @@
 	}
 
 	function clickThankYouBybitButton() {
-		const thankYouButton = document.querySelector('#__nuxt > div > div.bottom-sheet.open > div.bottom-sheet-inner > div.bottom-sheet-scroll > div > button');
+		const thankYouButton = document.querySelector('.bottom-sheet-button.button.button-primary.button-large');
 		if (thankYouButton) {
 			thankYouButton.click();
 			console.log(`${logPrefix}'Thank you' button clicked.`, styles.success);
@@ -667,7 +667,7 @@
 	async function updateClickerData() {
 		const clickerStore = window.useNuxtApp().$pinia._s.get('clicker');
 		const boostStore = window.useNuxtApp().$pinia._s.get('boost');
-		const balance = clickerStore.balanceDiamonds;
+		const balance = clickerStore.balanceCoins;
 		const availableTaps = clickerStore.availableTaps;
 		const fullEnergySecondsCountdown = boostStore.fullEnergySecondsCountdown;
 		return {
@@ -701,7 +701,7 @@
 	  const promoCodeInput = document.querySelector('.promocode-input-container');
 	  const promoCodeButton = document.querySelector('.promo-code-button');
 	  const morseButton = document.querySelector('.morse-button');
-		
+	  
 	  if (promoCodeInput && promoCodeButton) {
 		promoCodeButton.style.display = 'block';
 		if (morseButton && morseButton.style.display !== 'none') {
