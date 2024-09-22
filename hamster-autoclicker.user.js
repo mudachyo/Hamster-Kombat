@@ -43,8 +43,8 @@
 		maxEnergyRefillDelay: 180000, // Максимальная задержка в миллисекундах для пополнения энергии (180 секунд)
 		maxRetries: 5, // Максимальное количество попыток перед перезагрузкой страницы
 		autoBuyEnabled: false, // Автопокупка по умолчанию выключена
-		minAutoBuyRetryDelay: 120000, // Минимальная задержка в миллисекундах для повторной попытки купить карту (120 секунд)
-		maxAutoBuyRetryDelay: 240000, // Максимальная задержка в миллисекундах для повторной попытки купить карту (240 секунд)
+		minAutoBuyRetryDelay: 10, // Минимальная задержка в минутах для повторной попытки купить карту (10 минут)
+		maxAutoBuyRetryDelay: 20, // Максимальная задержка в минутах для повторной попытки купить карту (20 минут)
 		maxPaybackHours: 672, // Максимальное время окупаемости в часах для автопокупки (4 недели)
 		isPaused: false // Пауза по умолчанию выключена
 	};
@@ -490,8 +490,8 @@
 
 				if (balance < bestCard.price) {
 					// Using new config for Auto-Buy Retry Delay
-					const randomAutoBuyRetryDelay = getRandomNumber(settings.minAutoBuyRetryDelay, settings.maxAutoBuyRetryDelay);
-					console.log(`${logPrefix}Waiting for ${randomAutoBuyRetryDelay / 1000} seconds, before next check sufficient balance to buy (${bestCard.name}). Balance: (${balance.toFixed(2)}), CardPrice: (${bestCard.price})`, styles.info);
+					const randomAutoBuyRetryDelay = getRandomNumber(settings.minAutoBuyRetryDelay*60000, settings.maxAutoBuyRetryDelay*60000);
+					console.log(`${logPrefix}Waiting for ${(randomAutoBuyRetryDelay / 60000).toFixed(2)} minutes, before next check sufficient balance to buy (${bestCard.name}). Balance: (${balance.toFixed(2)}), CardPrice: (${bestCard.price})`, styles.info);
 					setTimeout(autoBuy, randomAutoBuyRetryDelay);
 					return;
 				}
@@ -1062,7 +1062,7 @@
 		settingsMenu.appendChild(createSettingElement('Refill Delay (ms)', 'EnergyRefillDelay', 'double-range', 10, 1200000, 1200000, 10,
 			'EN: Energy refill delay in seconds.<br>' +
 			'RU: Задержка пополнения энергии.'));
-		settingsMenu.appendChild(createSettingElement('Auto-Buy Retry Delay (ms)', 'AutoBuyRetryDelay', 'double-range', 10, 600000, 1200000, 10,
+		settingsMenu.appendChild(createSettingElement('Auto-Buy Retry Delay (min)', 'AutoBuyRetryDelay', 'double-range', 1, 180, 360, 1,
 			'EN: Delay in retry to auto-purchase cards.<br>' +
 			'RU: Задержка повторной попытки авто-покупки карт.'));
 
