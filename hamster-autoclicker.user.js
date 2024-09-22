@@ -506,6 +506,22 @@
 				} catch (e) {
 					console.log(`${logPrefix}Error buying upgrade: ${e.message}`, styles.error);
 				}
+			} else {
+				const sortedDataCooldown = upgradesForBuy
+				.filter(item => {
+					const paybackHours = item.price / item.profitPerHourDelta;
+					return item.isAvailable && item.cooldownSeconds > 0 && !item.isExpired && paybackHours <= settings.maxPaybackHours && (typeof item.maxLevel === "undefined" || item.level <= item.maxLevel);
+				})
+				.sort((a, b) => a.cooldownSeconds - b.cooldownSeconds);
+
+				if (sortedDataCooldown.length > 0) {
+					// Checking cards with cooldown
+					const bestCardCooldown = sortedDataCooldown[0];
+					const randomAutoBuyBestCardCooldown = getRandomNumber((bestCardCooldown.cooldownSeconds*1000)+getRandomNumber(300000,600000), (bestCardCooldown.cooldownSeconds*1000)+getRandomNumber(900000,1200000));
+					console.log(`${logPrefix}Waiting for ${(randomAutoBuyBestCardCooldown/60000).toFixed(2)} minutes, before next check sufficient balance to buy (${bestCardCooldown.name}). Balance: (${balance.toFixed(2)}), CardPrice: (${bestCardCooldown.price}), cooldownSeconds: (${bestCardCooldown.cooldownSeconds})`, styles.info);
+					setTimeout(autoBuy, randomAutoBuyBestCardCooldown);
+					return;
+				}
 			}
 		} catch (e) {
 			console.log(`${logPrefix}Error in autoBuy function: ${e.message}`, styles.error);
