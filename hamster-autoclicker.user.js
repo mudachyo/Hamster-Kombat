@@ -467,7 +467,7 @@
 			const sortedData = upgradesForBuy
 				.filter(item => {
 					const paybackHours = item.price / item.profitPerHourDelta;
-					return item.isAvailable && !item.cooldownSeconds && !item.isExpired && paybackHours <= settings.maxPaybackHours;
+					return item.isAvailable && !item.cooldownSeconds && !item.isExpired && paybackHours <= settings.maxPaybackHours && (typeof item.maxLevel === "undefined" || item.level <= item.maxLevel);
 				})
 				.map(item => ({
 					...item,
