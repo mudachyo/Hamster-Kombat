@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      3.0.2
+// @version      3.1
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
