@@ -518,7 +518,7 @@
 					// Checking cards with cooldown
 					const bestCardCooldown = sortedDataCooldown[0];
 					const randomAutoBuyBestCardCooldown = getRandomNumber((bestCardCooldown.cooldownSeconds*1000)+getRandomNumber(300000,600000), (bestCardCooldown.cooldownSeconds*1000)+getRandomNumber(900000,1200000));
-					console.log(`${logPrefix}Waiting for ${(randomAutoBuyBestCardCooldown/60000).toFixed(2)} minutes, before next check sufficient balance to buy (${bestCardCooldown.name}). Balance: (${balance.toFixed(2)}), CardPrice: (${bestCardCooldown.price}), cooldownSeconds: (${bestCardCooldown.cooldownSeconds})`, styles.info);
+					console.log(`${logPrefix}Waiting for ${(randomAutoBuyBestCardCooldown/60000).toFixed(2)} minutes, before next check to buy (${bestCardCooldown.name}). Balance: (${balance.toFixed(2)}), CardPrice: (${bestCardCooldown.price})`, styles.info);
 					setTimeout(autoBuy, randomAutoBuyBestCardCooldown);
 					return;
 				}
