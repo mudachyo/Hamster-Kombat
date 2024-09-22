@@ -1543,10 +1543,12 @@
 		}
 	}
 
+	// added random startDelay
+	const startDelay = getRandomNumber(10000, 15000);
 	setTimeout(() => {
-		console.log(`${logPrefix}Script starting after 5 seconds delay...`, styles.starting);
+		console.log(`${logPrefix}Script starting after ${(startDelay/1000).toFixed(2)} seconds delay...`, styles.starting);
 		clickThankYouBybitButton();
 		performRandomClick();
 		autoBuy();
-	}, 5000);
+	}, startDelay);
 })();
