@@ -4,7 +4,7 @@
 // @match        *://*.hamsterkombat.io/*
 // @match        *://*.hamsterkombatgame.io/*
 // @exclude      https://hamsterkombatgame.io/games/UnblockPuzzle/*
-// @version      3.1
+// @version      3.1.1
 // @grant        none
 // @icon         https://hamsterkombatgame.io/images/icons/hamster-coin.png
 // @downloadURL  https://github.com/mudachyo/Hamster-Kombat/raw/main/hamster-autoclicker.user.js
@@ -634,8 +634,8 @@
 			upgradesForBuy.forEach(item => {
 				const paybackTime = item.profitPerHourDelta ? (item.price / item.profitPerHourDelta) : Infinity;
 				const paybackClass = paybackTime <= settings.maxPaybackHours ? 'payback-good' : 'payback-bad';
-				const isAvailable = item.isAvailable && !item.isExpired;
-				const availabilityIcon = isAvailable ? '✅' : '❌';
+				const isAvailable = item.isAvailable && !item.isExpired && (typeof item.maxLevel === "undefined" || item.level <= item.maxLevel);
+				const availabilityIcon = isAvailable && item.cooldownSeconds ? '🕒' : isAvailable ? '✅' : '❌';
 				tableContent += `
 				<tr class="${isAvailable ? 'available' : 'unavailable'}">
 					<td class="availability-icon">${availabilityIcon}</td>
